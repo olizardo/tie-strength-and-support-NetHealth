@@ -9,3 +9,8 @@ raw_dat/
 dat/*.csv
 *.log
 .DS_Store
+
+# Data files (NetHealth survey records and large binary model objects)
+data/*.csv
+data/*.rds
+!data/.gitkeep
