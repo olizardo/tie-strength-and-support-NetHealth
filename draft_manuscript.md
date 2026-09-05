@@ -24,6 +24,8 @@ Social ties serve as the fundamental conduits through which individuals access p
 
 Marsden and Campbell’s (1984) measurement model established that emotional closeness serves as the primary and most valid empirical indicator of tie strength, whereas contact frequency functions as an imperfect indicator that is heavily contaminated by institutional and organizational constraints. For example, coworkers or dormmates may interact daily due to physical proximity rather than mutual confiding, whereas geographically separated kin may interact infrequently while maintaining profound emotional intimacy. Similarly, cognitive salience—the cognitive accessibility of an alter as reflected in the order in which they are retrieved during name generation—reflects psychological prominence that may diverge from sheer contact volume (Kitts, 2014). Finally, relationship duration reflects the temporal accumulation of relational investments, yet whether longevity translates into active support depends heavily on role context.
 
+As Smith (2021) emphasizes in a recent synthesis of ego-network research, the measurement of social support represents the single most common substantive application of personal network data (Cornwell et al., 2008; Fischer, 1982; Wellman & Wortley, 1990). Yet empirical investigations in this tradition often rely on aggregate summary measures—such as total network size or simple degree counts of available supporters—treating personal networks as an undifferentiated reservoir of assistance. As Smith (2021) argues, this aggregate approach obscures the reality that different alters offer fundamentally different resources: some provide material aid (financial assistance), others offer informational guidance (advice), and others supply expressive backing (emotional comfort) or everyday sociability. Because ego network surveys collect detailed information on the specific nature of each dyadic bond—including emotional closeness, contact frequency, duration, and role category—they provide the empirical resolution required to examine how distinct dimensions of tie strength activate specific functional exchanges. Decoupling these dimensions at the dyadic level reveals how personal communities organize a specialized division of relational labor, rather than assuming that strong ties universally provide all forms of aid.
+
 These conceptual distinctions motivate several core empirical questions regarding how tie strength and role relations interact to structure social support provision:
 
 First, how do the empirical indicators of tie strength correlate across different social role relations? If emotional closeness and interaction frequency represent partially autonomous dimensions, we should observe distinct tie-strength profiles across roles. In particular, family ties are expected to exhibit high emotional closeness despite lower everyday activation frequency compared to peer relationships on a residential campus.
@@ -120,7 +122,11 @@ These findings have direct implications for contemporary theories of social capi
 
 Borgatti, S. P., Mehra, A., Brass, D. J., & Labianca, G. (2009). Network analysis in the social sciences. *Science*, 323(5916), 892–895. https://doi.org/10.1126/science.1165821
 
+Cornwell, B., Laumann, E. O., & Schumm, L. P. (2008). The social connectedness of older adults: A national profile. *American Sociological Review*, 73(2), 185–203. https://doi.org/10.1177/000312240807300201
+
 Feld, S. L. (1982). Social structural determinants of similarity among associates. *American Sociological Review*, 47(6), 797–801. https://doi.org/10.2307/2095213
+
+Fischer, C. S. (1982). *To Dwell Among Friends: Personal Networks in Town and City*. University of Chicago Press.
 
 Granovetter, M. S. (1973). The strength of weak ties. *American Journal of Sociology*, 78(6), 1360–1380. https://doi.org/10.1086/225469
 
@@ -131,5 +137,7 @@ Lin, N. (2001). *Social Capital: A Theory of Social Structure and Action*. Cambr
 Lizardo, O. (2024). Theorizing the concept of social tie using frames. *Social Networks*, 78, 80–91. https://doi.org/10.1016/j.socnet.2024.01.001
 
 Marsden, P. V., & Campbell, K. E. (1984). Measuring tie strength. *Social Forces*, 63(2), 482–501. https://doi.org/10.2307/2579058
+
+Smith, J. A. (2021). The continued relevance of ego network data. In R. Light & J. Moody (Eds.), *The Oxford Handbook of Social Networks* (pp. 170–187). Oxford University Press. https://doi.org/10.1093/oxfordhb/9780190251765.013.15
 
 Wellman, B., & Wortley, S. (1990). Different strokes from different folks: Community ties and social support. *American Journal of Sociology*, 96(3), 558–588. https://doi.org/10.1086/229572
