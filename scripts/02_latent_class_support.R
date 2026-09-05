@@ -123,7 +123,7 @@ print(class_summary)
 probs_df <- probs_df %>%
   left_join(class_summary %>% dplyr::select(class_num, class_label), by = "class_num")
 
-# Plot Conditional Item Response Probabilities
+# Plot Conditional Item Response Probabilities (flipped coordinates)
 p_lca_profiles <- ggplot(
   probs_df,
   aes(x = item_label, y = probability, fill = class_label, group = class_label)
@@ -132,26 +132,36 @@ p_lca_profiles <- ggplot(
   geom_text(
     aes(label = sprintf("%.2f", probability)),
     position = position_dodge(width = 0.8),
-    vjust = -0.5, size = 3
+    hjust = -0.15, size = 3.2
   ) +
-  scale_y_continuous(limits = c(0, 1.1), breaks = seq(0, 1, 0.2), labels = scales::percent_format()) +
+  coord_flip() +
+  scale_y_continuous(
+    limits = c(0, 1.15),
+    breaks = seq(0, 1, 0.2),
+    labels = scales::percent_format(),
+    expand = expansion(mult = c(0.01, 0.05))
+  ) +
   scale_fill_brewer(palette = "Set2") +
   labs(
-    title = "Latent Classes of Social Support Exchanges in Ego Networks",
-    subtitle = "Item response probabilities from 4-class Latent Class Model (N = 22,739 ties)",
+    title = "Latent Classes of Social Support Exchanges",
+    subtitle = "Item response probabilities from 4-class LCA model (N = 22,739 ties)",
     x = "Support Type",
     y = "Conditional Response Probability",
     fill = "Latent Support Class"
   ) +
-  theme_minimal(base_size = 12) +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+  theme_minimal(base_size = 11) +
   theme(
-    axis.text.x = element_text(angle = 15, hjust = 1, face = "bold"),
+    axis.text.y = element_text(face = "bold", color = "black"),
+    axis.text.x = element_text(color = "black"),
     legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 10),
     panel.grid.minor = element_blank()
   )
 
-ggsave("output/figures/fig1_lca_support_profiles.png", p_lca_profiles, width = 9, height = 5.5, dpi = 300)
-cat("==> Saved output/figures/fig1_lca_support_profiles.png\n")
+ggsave("output/figures/fig1_lca_support_profiles.png", p_lca_profiles, width = 6.5, height = 4.8, dpi = 300)
+ggsave("Plots/fig1_lca_support_profiles.png", p_lca_profiles, width = 6.5, height = 4.8, dpi = 300)
+cat("==> Saved output/figures/fig1_lca_support_profiles.png and Plots/fig1_lca_support_profiles.png\n")
 
 # 3. Assign ties to modal latent classes and merge into analytical dataset
 class_labels_vec <- setNames(class_summary$class_label, class_summary$class_num)
