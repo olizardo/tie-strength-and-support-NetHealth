@@ -14,3 +14,13 @@ dat/*.csv
 data/*.csv
 data/*.rds
 !data/.gitkeep
+
+# Drive sync intermediate files
+draft_*.docx
+draft_*.txt
+draft.docx
+draft_updated.docx
+draft_live.docx
+replacements.json
+*.tmp
+.tmp/
