@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.quarto/
+*_cache/
+cache/
+raw_dat/
+dat/*.csv
+*.log
+.DS_Store
