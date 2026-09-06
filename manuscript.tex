@@ -167,70 +167,23 @@ Dimension \& Category & \shortstack{Casual\\Companionship} & \shortstack{Compreh
 
 Table~\ref{tab:lca_crosstabs} presents the cross-classification of assigned latent support classes across social role relations (Panel A) and emotional closeness levels (Panel B). The empirical sorting reveals pronounced institutional and affective specialization. Among friends, ties are split predominantly between Casual Companionship (53.8\%) and Comprehensive Support (40.5\%), with virtually zero presence in Instrumental Support (1.0\%). By contrast, family ties are heavily concentrated in Comprehensive Support (58.3\%) and Instrumental Support (17.8\%), while Casual Companionship accounts for only 15.3\%. Romantic partners exhibit the highest concentration of Comprehensive Support (81.7\%), with minimal peripheral categorization (1.9\%). Acquaintances and other roles are primarily relegated to Peripheral Support (49.3\% and 33.5\%, respectively) and Casual Companionship.
 
-Examining Panel B of Table~\ref{tab:lca_crosstabs} shows that emotional closeness strongly stratifies support configurations. Ties classified as ``Especially Close'' are overwhelmingly located in Comprehensive Support (61.7\%), whereas ties categorized as ``Close'' or ``Less Close'' are predominantly confined to Casual Companionship (69.3\% and 66.5\%, respectively). Peripheral support is heavily concentrated among distant and less close ties, showing that emotional intimacy is an indispensable prerequisite for multi-domain support provision.
+Examining Panel B of Table~\ref{tab:lca_crosstabs} shows that emotional closeness strongly stratifies support configurations. Ties classified as ``Especially Close'' are overwhelmingly located in Comprehensive Support (61.7\%), whereas ties categorized as ``Close'' or ``Less Close'' are predominantly confined to Casual Companionship (69.3\% and 66.5\%, respectively). Peripheral support is heavily concentrated among distant, less-close ties, indicating that emotional intimacy is an indispensable prerequisite for multi-domain support provision.
 
 \section{Multilevel Models: Predicting Latent Support Configurations}
 
-To test how tie strength indicators and role relations independently predict membership in each of the inductively identified support configurations while accounting for the nesting of multiple ties within respondents, we formulated multilevel generalized linear mixed models (GLMMs) with a logit link function using the \texttt{lme4} package \citep{bates2015fitting} in \textsf{R} \citep{rcore2026r}. Model visualizations were created using \texttt{ggplot2} \citep{wickham2016ggplot2}. Rather than predicting disaggregated individual support items---which would render the latent class typologizing redundant---the dependent variables in this confirmatory stage are the four distinct relational regimes identified by the LCA: Comprehensive Support, Casual Companionship, Instrumental Support, and Peripheral Support.
+To test how tie strength indicators and role relations independently predict membership in each of the inductively identified support configurations while accounting for the nesting of multiple ties within respondents, we fit multilevel generalized linear mixed models (GLMMs) with a logit link function using the \texttt{lme4} package \citep{bates2015fitting} in \textsf{R} \citep{rcore2026r}. The outcome variables in this confirmatory stage are the four distinct relational regimes identified by the LCA: Comprehensive Support, Casual Companionship, Instrumental Support, and Peripheral Support.
 
 For each latent support category $k$ (Comprehensive Support, Casual Companionship, Instrumental Support, or Peripheral Support), the probability that a dyadic tie $i$ nested within ego $j$ is assigned to class $k$ is modeled as:
 \begin{equation}
 \text{logit}(P(Y_{ij} = k)) = \beta_{0k} + \mathbf{X}_{ij}\boldsymbol{\beta}_k + u_{jk}
 \end{equation}
-where $\mathbf{X}_{ij}$ represents the vector of tie-level strength indicators (affective closeness, contact frequency, cognitive salience, and duration), social role relations, and dyadic controls, $\boldsymbol{\beta}_k$ is the class-specific vector of fixed-effect coefficients, and $u_{jk} \sim \mathcal{N}(0, \sigma_{uk}^2)$ represents the ego-specific random intercept for class $k$. By capturing unobserved respondent-level variance---such as individual baseline sociability, reporting thresholds, or dispositional tendencies to perceive support---the inclusion of $u_{jk}$ prevents standard error deflation and accounts for dyadic clustering within personal networks. Latent intraclass correlation coefficients (ICCs) demonstrate substantial ego-level clustering across all four configurations, ranging from 0.248 for Casual Companionship ($\sigma_u^2 = 1.082$) to 0.307 for Comprehensive Support ($\sigma_u^2 = 1.457$), 0.356 for Instrumental Support ($\sigma_u^2 = 1.821$), and 0.380 for Peripheral Support ($\sigma_u^2 = 2.016$).
+where $\mathbf{X}_{ij}$ represents the vector of tie-level strength indicators (affective closeness, contact frequency, cognitive salience, and duration), social role relations, and dyadic controls; $\boldsymbol{\beta}_k$ is the class-specific vector of fixed-effect coefficients, and $u_{jk} \sim \mathcal{N}(0, \sigma_{uk}^2)$ represents the ego-specific random intercept for class $k$. By capturing unobserved respondent-level variance---such as individual baseline sociability, reporting thresholds, or dispositional tendencies to perceive support---the inclusion of $u_{jk}$ prevents standard error deflation and accounts for dyadic clustering within personal networks. Latent intraclass correlation coefficients (ICCs) demonstrate substantial ego-level clustering across all four configurations, ranging from 0.248 for Casual Companionship ($\sigma_u^2 = 1.082$) to 0.307 for Comprehensive Support ($\sigma_u^2 = 1.457$), 0.356 for Instrumental Support ($\sigma_u^2 = 1.821$), and 0.380 for Peripheral Support ($\sigma_u^2 = 2.016$).
 
-From an estimation standpoint, specifying separate binary GLMMs for each latent configuration offers distinct methodological advantages over simultaneous multinomial mixed models \citep[such as \texttt{mclogit::mblogit};][]{elff2025mclogit}. In dyadic network data, certain cross-classifications between role relations and specialized support regimes contain extreme cell sparsity---most notably, acquaintances providing instrumental kin support ($n = 1$). Under frequentist Fisher scoring or Newton-Raphson algorithms in multinomial settings, these sparse cells induce quasi-complete separation, producing non-convergence warnings and unstable covariance matrices. The binary GLMM framework avoids these computational pathologies, preserves full categorical granularity across all role categories and duration intervals, and allows the respondent-level variance ($\sigma_{uk}^2$) to vary freely across distinct support regimes. Table~\ref{tab:glmm_results} presents the estimated odds ratios (ORs) and 95\% confidence intervals from these multilevel models across the four latent support configurations.
+From an estimation standpoint, specifying separate binary GLMMs for each latent configuration offers distinct methodological advantages over simultaneous multinomial mixed models \citep[such as \texttt{mclogit::mblogit};][]{elff2025mclogit}. In dyadic network data, certain cross-classifications between role relations and specialized support regimes contain extreme cell sparsity---most notably, acquaintances providing instrumental kin support ($n = 1$). Sparse cells induce quasi-complete separation, leading to non-convergence warnings and unstable covariance matrices in simultaneous multinomial estimators. The binary GLMM framework avoids these computational issues, preserves full categorical granularity across all role categories and duration intervals, and allows the respondent-level variance ($\sigma_{uk}^2$) to vary freely across distinct support regimes. Figure~\ref{fig:glmm_odds} presents the estimated adjusted odds ratios (ORs) and 95\% confidence intervals from these multilevel models across the four latent support configurations.
 
-\begin{table}[p]
+\begin{figure}[htbp]
 \centering
-\caption{Multilevel Mixed-Effects Logistic Regression Models Predicting Latent Social Support Configurations}
-\label{tab:glmm_results}
-\scriptsize
-\setlength{\tabcolsep}{2pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccc@{}}
-\toprule
-Predictor Variable & \shortstack{Comprehensive\\Support} & \shortstack{Casual\\Companionship} & \shortstack{Instrumental\\Support} & \shortstack{Peripheral\\Support} \\
-\midrule
-\multicolumn{5}{l}{\textit{Emotional Closeness (ref: Close)}} \\
-\hspace{1em}Especially Close & 7.09*** (6.46, 7.79) & 0.24*** (0.22, 0.26) & 0.84 (0.67, 1.07) & 0.20*** (0.17, 0.24) \\
-\hspace{1em}Less Close & 0.23*** (0.16, 0.32) & 0.72*** (0.60, 0.85) & 0.92 (0.52, 1.64) & 3.71*** (2.99, 4.59) \\
-\hspace{1em}Distant & 0.62 (0.27, 1.40) & 0.42** (0.23, 0.75) & 2.78 (0.69, 11.18) & 3.61*** (1.78, 7.32) \\
-\addlinespace
-\multicolumn{5}{l}{\textit{Contact Frequency (ref: Weekly)}} \\
-\hspace{1em}Daily & 1.22*** (1.12, 1.33) & 0.89** (0.82, 0.97) & 0.77** (0.64, 0.92) & 0.88 (0.75, 1.03) \\
-\hspace{1em}Monthly & 0.89 (0.78, 1.02) & 1.27*** (1.12, 1.44) & 0.62*** (0.47, 0.81) & 1.25* (1.01, 1.54) \\
-\hspace{1em}Less than Monthly & 0.74 (0.54, 1.01) & 1.38* (1.05, 1.81) & 0.66 (0.36, 1.19) & 1.26 (0.85, 1.85) \\
-\addlinespace
-\multicolumn{5}{l}{\textit{Cognitive Salience (ref: Middle 10)}} \\
-\hspace{1em}Top 5 & 1.36*** (1.25, 1.47) & 0.69*** (0.64, 0.75) & 1.43*** (1.20, 1.72) & 0.93 (0.80, 1.09) \\
-\hspace{1em}Bottom 5 & 0.80** (0.70, 0.92) & 1.18** (1.05, 1.34) & 1.34 (0.96, 1.89) & 0.84 (0.67, 1.04) \\
-\addlinespace
-\multicolumn{5}{l}{\textit{Relationship Duration (ref: 2--4 Years)}} \\
-\hspace{1em}5--10 Years & 2.10*** (1.83, 2.42) & 0.56*** (0.49, 0.64) & 1.30 (0.81, 2.07) & 0.49*** (0.36, 0.67) \\
-\hspace{1em}$>$ 10 Years & 2.37*** (1.96, 2.87) & 0.45*** (0.37, 0.54) & 1.81* (1.04, 3.13) & 0.72 (0.49, 1.07) \\
-\addlinespace
-\multicolumn{5}{l}{\textit{Social Role Relation (ref: Friend)}} \\
-\hspace{1em}Family & 0.54*** (0.45, 0.64) & 0.40*** (0.33, 0.48) & 12.98*** (8.29, 20.30) & 5.73*** (3.92, 8.36) \\
-\hspace{1em}Romantic Partner & 5.20*** (4.08, 6.63) & 0.21*** (0.16, 0.27) & 1.29 (0.65, 2.54) & 0.78 (0.39, 1.55) \\
-\hspace{1em}Acquaintance & 0.44* (0.22, 0.88) & 0.21*** (0.15, 0.30) & $<$ 0.01 (---) & 9.50*** (6.40, 14.09) \\
-\hspace{1em}Other Role & 0.35*** (0.23, 0.54) & 0.39*** (0.29, 0.52) & 2.23 (0.92, 5.43) & 12.03*** (8.22, 17.61) \\
-\addlinespace
-\multicolumn{5}{l}{\textit{Dyadic and Individual Context}} \\
-\hspace{1em}Same Dormitory & 1.09 (0.96, 1.23) & 0.98 (0.88, 1.09) & 0.50* (0.29, 0.86) & 0.78* (0.62, 0.97) \\
-\hspace{1em}Roommate & 1.17* (1.00, 1.37) & 0.90 (0.78, 1.04) & 1.09 (0.51, 2.35) & 1.17 (0.84, 1.62) \\
-\hspace{1em}Ego Gender: Men (vs.\ Women) & 0.25*** (0.20, 0.31) & 3.04*** (2.50, 3.68) & 1.52** (1.12, 2.04) & 1.76*** (1.30, 2.40) \\
-\midrule
-Random Intercept Variance ($\sigma_u^2$) & 1.457 & 1.082 & 1.821 & 2.016 \\
-Latent Intraclass Correlation (ICC) & 0.307 & 0.248 & 0.356 & 0.380 \\
-\bottomrule
-\end{tabular*}
-\vspace{0.5em}
-\parbox{\textwidth}{\footnotesize \textbf{Note:} Sample size $N = 22,737$ tie observations nested within $N = 581$ unique egos (ties with unknown duration omitted). Models include random ego intercepts (\texttt{(1 | egoid)}). Odds ratios (OR) are reported with 95\% confidence intervals in parentheses. Statistical significance: * $p < 0.05$, ** $p < 0.01$, *** $p < 0.001$.}
-\end{table}
-
-\begin{figure}[p]
-\centering
-\includegraphics[width=0.85\textwidth,height=0.45\textheight,keepaspectratio]{Plots/fig2_glmm_odds_ratios.png}
+\includegraphics[width=0.92\textwidth]{Plots/fig2_glmm_odds_ratios.png}
 \caption{Adjusted Odds Ratios from Multilevel Logistic GLMMs Predicting Latent Social Support Configurations}
 \label{fig:glmm_odds}
 \vspace{0.3em}
