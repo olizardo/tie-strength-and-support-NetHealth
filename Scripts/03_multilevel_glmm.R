@@ -117,28 +117,36 @@ saveRDS(models, "data/glmm_fitted_models.rds")
 cat("==> Saved output/tables/glmm_results_odds_ratios.csv and data/glmm_fitted_models.rds\n")
 
 # Forest Plot of Key Predictors across Latent Support Classes
-core_terms <- c(
+all_predictors <- c(
   "Closeness: Especially Close (vs. Close)",
   "Closeness: Less Close (vs. Close)",
+  "Closeness: Distant (vs. Close)",
   "Frequency: Daily (vs. Weekly)",
   "Frequency: Monthly (vs. Weekly)",
+  "Frequency: Less than Monthly (vs. Weekly)",
   "Salience: Top 5 (vs. Middle 10)",
+  "Salience: Bottom 5 (vs. Middle 10)",
+  "Duration: > 10 Years (vs. 2-4 Years)",
+  "Duration: 5-10 Years (vs. 2-4 Years)",
+  "Duration: < 2 Years (vs. 2-4 Years)",
   "Role: Family (vs. Friend)",
   "Role: Romantic Partner (vs. Friend)",
   "Role: Acquaintance (vs. Friend)",
+  "Role: Other (vs. Friend)",
   "Context: Same Dormitory",
+  "Context: Roommate",
   "Ego Gender: Men (vs. Women)"
 )
 
 plot_df <- all_tidy %>%
-  filter(term_clean %in% core_terms) %>%
+  filter(term_clean %in% all_predictors) %>%
   # Filter degenerate points with extreme separation standard errors
   mutate(
     is_degenerate = std_error > 10,
     estimate_plot = ifelse(is_degenerate, NA, estimate),
     conf_low_plot = ifelse(is_degenerate, NA, pmax(conf_low, 0.08)),
     conf_high_plot = ifelse(is_degenerate, NA, pmin(conf_high, 20)),
-    term_clean = factor(term_clean, levels = rev(core_terms)),
+    term_clean = factor(term_clean, levels = rev(all_predictors)),
     outcome_label = factor(
       outcome_label,
       levels = c("Comprehensive Support", "Casual Companionship", "Instrumental Support", "Peripheral Support")
@@ -150,8 +158,8 @@ p_forest <- ggplot(plot_df, aes(x = estimate_plot, y = term_clean, color = outco
   geom_pointrange(
     aes(xmin = conf_low_plot, xmax = conf_high_plot),
     position = position_dodge(width = 0.65),
-    linewidth = 0.6,
-    size = 0.5,
+    linewidth = 0.55,
+    size = 0.4,
     na.rm = TRUE
   ) +
   scale_x_log10(
@@ -161,21 +169,34 @@ p_forest <- ggplot(plot_df, aes(x = estimate_plot, y = term_clean, color = outco
   ) +
   scale_color_brewer(palette = "Set2") +
   labs(
-    title = "Predictors of Latent Social Support Configurations Across Ego Networks",
+    title = "Predictors of Latent Social Support Configurations",
     subtitle = "Multilevel Logistic GLMM Odds Ratios with 95% Confidence Intervals (N = 22,737 ties)",
     x = "Adjusted Odds Ratio (log scale)",
     y = NULL,
     color = "Latent Support Class"
   ) +
-  guides(color = guide_legend(nrow = 1, byrow = TRUE)) +
+  guides(color = guide_legend(
+    nrow = 2,
+    byrow = TRUE,
+    title.position = "top",
+    title.hjust = 0.5
+  )) +
   theme_minimal(base_size = 11) +
   theme(
+    plot.title.position = "plot",
+    plot.title = element_text(face = "bold", size = 11.5, color = "black"),
+    plot.subtitle = element_text(size = 9.5, color = "gray30", margin = margin(b = 8)),
     legend.position = "bottom",
+    legend.box = "vertical",
+    legend.box.just = "center",
+    legend.title = element_text(face = "bold", size = 9.5),
+    legend.text = element_text(size = 8.5),
+    legend.margin = margin(t = 2, b = 2),
     panel.grid.minor = element_blank(),
-    axis.text.y = element_text(face = "bold", color = "black", size = 9.5),
-    axis.text.x = element_text(color = "black")
+    axis.text.y = element_text(face = "bold", color = "black", size = 8.5),
+    axis.text.x = element_text(color = "black", size = 9)
   )
 
-ggsave("output/figures/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 5.2, dpi = 300)
-ggsave("Plots/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 5.2, dpi = 300)
+ggsave("output/figures/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 6.5, dpi = 300)
+ggsave("Plots/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 6.5, dpi = 300)
 cat("==> Saved output/figures/fig2_glmm_odds_ratios.png and Plots/fig2_glmm_odds_ratios.png\n")

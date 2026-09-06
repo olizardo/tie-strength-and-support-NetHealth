@@ -100,7 +100,7 @@ Figure 2. **Adjusted Odds Ratios from Multilevel Logistic GLMMs Predicting Laten
 
 ![](Plots/fig2_glmm_odds_ratios.png)
 
-Note: Forest plot of adjusted odds ratios and 95% confidence intervals estimated from multilevel logistic regression models with random ego intercepts (N = 22,737 ties across N = 581 egos). The dashed vertical line indicates the null effect (OR = 1.0). The horizontal axis is plotted on a logarithmic scale.
+Note: Forest plot of adjusted odds ratios and 95% confidence intervals estimated from multilevel logistic regression models with random ego intercepts (N = 22,737 ties across N = 581 egos). The dashed vertical line indicates the null effect (OR = 1.0). The horizontal axis is plotted on a logarithmic scale. The estimate for acquaintances predicting instrumental support exhibits quasi-complete separation due to cell sparsity (n = 1, SE = 271.99) and is omitted from the plot to preserve visual scale.
 
 Figure 2 visualizes the estimated odds ratios across the four latent social support configurations, allowing for direct comparison of how tie strength and role relations sort personal networks into distinct relational regimes. The parameter estimates demonstrate clear empirical patterns:
 
