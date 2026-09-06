@@ -40,7 +40,7 @@ The original 2018 analysis utilized multi-way log-linear contingency table model
 │       ├── lca_classes_by_role.csv
 │       ├── lca_classes_by_closeness.csv
 │       └── glmm_results_odds_ratios.csv
-└── scripts/
+└── Scripts/
     ├── 01_prepare_data.R       # Data ingestion, harmonization, and tie variable coding
     ├── 02_latent_class_support.R # poLCA estimation, model fit comparison, and profile plotting
     └── 03_multilevel_glmm.R    # Mixed-effects logistic regression models predicting support
@@ -64,13 +64,13 @@ To replicate the complete analysis from scratch:
 
 ```bash
 # 1. Clean and harmonize network tie records across waves
-Rscript scripts/01_prepare_data.R
+Rscript Scripts/01_prepare_data.R
 
 # 2. Estimate latent class models and generate support profile figures
-Rscript scripts/02_latent_class_support.R
+Rscript Scripts/02_latent_class_support.R
 
 # 3. Fit multilevel GLMMs and export odds-ratio summary tables and plots
-Rscript scripts/03_multilevel_glmm.R
+Rscript Scripts/03_multilevel_glmm.R
 ```
 
 ---
