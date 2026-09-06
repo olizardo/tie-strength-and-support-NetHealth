@@ -583,6 +583,83 @@ When collaborating on live manuscripts hosted on Google Drive where authors acti
 7. **The Two-Way Local Markdown Synchronization Rule**:
    - Immediately after applying a surgical edit to the live document, update `current_text.md` to reflect the change so that the local markdown mirror remains 100% faithful to the live document.
 
+
+## Overleaf Direct Git Synchronization Protocol (MANDATORY)
+
+For projects where LaTeX manuscripts, bibliographies, and figures are synced directly with Overleaf via Git:
+
+### 1. Authentication & Credentials (`~/.netrc`)
+- **Git Authentication Tokens Only**: Overleaf has permanently discontinued password-based Git authentication. All Git interactions must authenticate using an **Overleaf Git Authentication Token** generated from [Overleaf Account Settings](https://www.overleaf.com/user/settings) under **Git Integration**.
+- **Fixed Username `git` (CRITICAL)**: Overleaf Git authentication strictly expects the literal username **`git`**—NOT the user's email address.
+- **Non-Interactive Authentication via `~/.netrc`**: To allow agents and command-line tools to pull and push without interactive credential prompts, credentials must be stored in `~/.netrc` with strict `600` permissions:
+  ```netrc
+  machine git.overleaf.com
+    login git
+    password <OVERLEAF_GIT_AUTH_TOKEN>
+  ```
+- **Permission Enforcement**: Always ensure `chmod 600 ~/.netrc`. Git, curl, and OpenSSL will refuse to parse credentials from a world-readable or group-readable `.netrc` file.
+
+### 2. Project Remote Setup
+- **Project URL to Git URL Mapping**:
+  Given an Overleaf project URL: `https://www.overleaf.com/project/<PROJECT_ID>`
+  The corresponding direct Git remote is: `https://git.overleaf.com/<PROJECT_ID>`
+- **Adding the Remote**:
+  ```bash
+  git remote add overleaf https://git.overleaf.com/<PROJECT_ID>
+  ```
+  *(If already configured, verify with `git remote -v`)*.
+
+### 3. Resolving the "Unrelated Histories" First-Sync Trap
+- When an Overleaf project is created or imported, Overleaf initializes its own internal Git commit root (e.g., `Update on Overleaf.`), which has no common commit ancestry with an existing GitHub or local repository.
+- **First Fetch**:
+  ```bash
+  git fetch overleaf
+  ```
+- **Merging with `--allow-unrelated-histories`**:
+  Attempting a standard `git merge` will fail with `fatal: refusing to merge unrelated histories`. You must explicitly pass:
+  ```bash
+  git merge --no-commit overleaf/main --allow-unrelated-histories
+  ```
+  *(Check whether Overleaf's default branch is `main` or `master` via `git branch -r`)*.
+- Once merged, commit and push to both remotes:
+  ```bash
+  git commit -m "merge: link Overleaf git history with main"
+  git push overleaf main
+  git push origin main
+  ```
+
+### 4. The Case-Sensitivity Trap (CRITICAL - Linux vs. Overleaf/macOS)
+- **Filesystem Asymmetry**: Overleaf runs on a case-insensitive filesystem layer. If a Linux repository contains both a lowercase and an uppercase directory (e.g., `scripts/` alongside `Scripts/`), Overleaf's Git bridge will collapse them into a single folder.
+- **Consequence**: Overleaf will detect a massive rename of files (e.g., `{scripts => Scripts}/...`), creating auto-generated divergent branches (such as `overleaf-YYYY-MM-DD-HHMM`) or causing merge blockades.
+- **Standardization Rule**: Always enforce a **single directory casing convention** across the entire repository (standardize strictly on `Scripts/`). Never mix `scripts/` and `Scripts/` in the same project.
+
+### 5. Routine Two-Way Synchronization Commands
+- **Pulling Updates from Overleaf**:
+  ```bash
+  git pull overleaf main
+  ```
+- **Pushing Local Changes to Overleaf**:
+  ```bash
+  git push overleaf main
+  ```
+- **Keeping GitHub and Overleaf in Parity**:
+  Whenever pushing local changes or after pulling Overleaf edits, always synchronize with GitHub:
+  ```bash
+  git push origin main
+  ```
+
+### 6. LaTeX Build Hygiene
+- Keep LaTeX auxiliary files out of Git tracking by adding them to `.gitignore`:
+  ```gitignore
+  *.aux
+  *.bbl
+  *.blg
+  *.out
+  *.synctex.gz
+  *.log
+  ```
+- Always ensure `manuscript.tex`, `references.bib`, and high-resolution figures in `Plots/` (or `figures/`) are tracked so Overleaf can compile standalone PDFs without missing assets.
+
 ## Bayesian Model Visualization Standards (`ggdist` & `ggplot2`)
 
 When visualizing Bayesian posterior distributions, marginal effects, random coefficients, and ordinal transitions from `brms` or `cmdstanr` models across any project, all agents must strictly adhere to these unified publication standards:
