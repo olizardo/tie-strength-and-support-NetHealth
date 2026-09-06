@@ -1,6 +1,6 @@
 #' ---
 #' title: "03_multilevel_glmm.R"
-#' description: "Multilevel Generalized Linear Mixed Models (GLMM) of Social Support"
+#' description: "Multilevel Generalized Linear Mixed Models (GLMM) predicting LCA Support Categories"
 #' author: "Omar Lizardo"
 #' ---
 
@@ -14,25 +14,28 @@ suppressPackageStartupMessages({
 
 cat("==> Loading data with latent classes...\n")
 df <- readRDS("data/tie_support_with_lca.rds") %>%
-  filter(!is.na(ego_gender) & !is.na(close_cat) & !is.na(freq_cat) & !is.na(role_cat)) %>%
+  filter(!is.na(ego_gender) & !is.na(close_cat) & !is.na(freq_cat) & !is.na(role_cat) & duration_cat != "Unknown") %>%
   mutate(
     # Set standard reference categories
     close_cat = relevel(close_cat, ref = "Close"),
     freq_cat = relevel(freq_cat, ref = "Weekly"),
     pos_cat = relevel(pos_cat, ref = "Middle 10"),
+    duration_cat = relevel(duration_cat, ref = "2-4 Years"),
     role_cat = relevel(role_cat, ref = "Friend"),
-    supp_comprehensive = lca_class == "Comprehensive Support"
+    supp_comp = as.integer(lca_class == "Comprehensive Support"),
+    supp_cas  = as.integer(lca_class == "Casual Companionship"),
+    supp_inst = as.integer(lca_class == "Instrumental Support"),
+    supp_per  = as.integer(lca_class == "Peripheral Support")
   )
 
 cat("Analytical sample size for GLMMs:", nrow(df), "ties across", n_distinct(df$egoid), "egos.\n")
 
-# Formula specification for GLMM
+# Formula specification for GLMM predicting each latent class
 outcomes <- c(
-  "supp_hang" = "Companionship",
-  "supp_adv"  = "Advice",
-  "supp_comf" = "Comfort",
-  "supp_fin"  = "Financial",
-  "supp_comprehensive" = "Comprehensive Latent Support"
+  "supp_comp" = "Comprehensive Support",
+  "supp_cas"  = "Casual Companionship",
+  "supp_inst" = "Instrumental Support",
+  "supp_per"  = "Peripheral Support"
 )
 
 models <- list()
@@ -40,7 +43,7 @@ tidy_list <- list()
 
 for (outcome in names(outcomes)) {
   outcome_label <- outcomes[outcome]
-  cat(sprintf("\n==> Fitting Multilevel GLMM for: %s...\n", outcome_label))
+  cat(sprintf("\n==> Fitting Multilevel GLMM for Latent Support Class: %s...\n", outcome_label))
   
   f <- as.formula(paste(
     outcome,
@@ -55,8 +58,6 @@ for (outcome in names(outcomes)) {
   )
   
   models[[outcome]] <- mod
-  
-  # Extract tidy estimates manually
   s_mod <- summary(mod)
   c_tab <- s_mod$coefficients
   
@@ -100,7 +101,6 @@ all_tidy <- all_tidy %>%
       term == "duration_cat< 2 Years" ~ "Duration: < 2 Years (vs. 2-4 Years)",
       term == "duration_cat5-10 Years" ~ "Duration: 5-10 Years (vs. 2-4 Years)",
       term == "duration_cat> 10 Years" ~ "Duration: > 10 Years (vs. 2-4 Years)",
-      term == "duration_catUnknown" ~ "Duration: Unknown",
       term == "role_catFamily" ~ "Role: Family (vs. Friend)",
       term == "role_catRomantic Partner" ~ "Role: Romantic Partner (vs. Friend)",
       term == "role_catAcquaintance" ~ "Role: Acquaintance (vs. Friend)",
@@ -116,7 +116,7 @@ write_csv(all_tidy, "output/tables/glmm_results_odds_ratios.csv")
 saveRDS(models, "data/glmm_fitted_models.rds")
 cat("==> Saved output/tables/glmm_results_odds_ratios.csv and data/glmm_fitted_models.rds\n")
 
-# Forest Plot of Key Predictors across Support Types
+# Forest Plot of Key Predictors across Latent Support Classes
 core_terms <- c(
   "Closeness: Especially Close (vs. Close)",
   "Closeness: Less Close (vs. Close)",
@@ -132,14 +132,13 @@ core_terms <- c(
 
 plot_df <- all_tidy %>%
   filter(
-    term_clean %in% core_terms,
-    outcome %in% c("supp_hang", "supp_adv", "supp_comf", "supp_fin")
+    term_clean %in% core_terms
   ) %>%
   mutate(
     term_clean = factor(term_clean, levels = rev(core_terms)),
     outcome_label = factor(
       outcome_label,
-      levels = c("Companionship", "Advice", "Comfort", "Financial")
+      levels = c("Comprehensive Support", "Casual Companionship", "Instrumental Support", "Peripheral Support")
     )
   )
 
@@ -147,24 +146,28 @@ p_forest <- ggplot(plot_df, aes(x = estimate, y = term_clean, color = outcome_la
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
   geom_pointrange(
     aes(xmin = conf_low, xmax = conf_high),
-    position = position_dodge(width = 0.6),
-    size = 0.5
+    position = position_dodge(width = 0.65),
+    linewidth = 0.5,
+    size = 0.4
   ) +
-  scale_x_log10(breaks = c(0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100)) +
-  scale_color_brewer(palette = "Dark2") +
+  scale_x_log10(breaks = c(0.1, 0.2, 0.5, 1, 2, 5, 10, 20)) +
+  scale_color_brewer(palette = "Set2") +
   labs(
-    title = "Predictors of Social Support Provision Across Ego Networks",
-    subtitle = "Multilevel Logistic GLMM Odds Ratios with 95% Confidence Intervals (N = 22,739 ties)",
-    x = "Odds Ratio (log scale)",
+    title = "Predictors of Latent Social Support Configurations Across Ego Networks",
+    subtitle = "Multilevel Logistic GLMM Odds Ratios with 95% Confidence Intervals (N = 22,737 ties)",
+    x = "Adjusted Odds Ratio (log scale)",
     y = NULL,
-    color = "Support Outcome"
+    color = "Latent Support Class"
   ) +
+  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
   theme_minimal(base_size = 11) +
   theme(
     legend.position = "bottom",
     panel.grid.minor = element_blank(),
-    axis.text.y = element_text(face = "bold")
+    axis.text.y = element_text(face = "bold", color = "black"),
+    axis.text.x = element_text(color = "black")
   )
 
-ggsave("output/figures/fig2_glmm_odds_ratios.png", p_forest, width = 10, height = 7, dpi = 300)
-cat("==> Saved output/figures/fig2_glmm_odds_ratios.png\n")
+ggsave("output/figures/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 5.2, dpi = 300)
+ggsave("Plots/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 5.2, dpi = 300)
+cat("==> Saved output/figures/fig2_glmm_odds_ratios.png and Plots/fig2_glmm_odds_ratios.png\n")

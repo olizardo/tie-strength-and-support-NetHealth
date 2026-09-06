@@ -12,6 +12,7 @@ DOM-based OpenXML table, figure, and style injector adhering strictly to AGENTS.
 - Harmonization of NetHealth Study description and references with sibling projects
 - Bolded, unindented table and figure captions following local normal text font
 - Bolded preferred model row in Table 1 (4 Classes)
+- Integration of LCA and GLMM: Multilevel models predict the four latent support configurations
 """
 
 import os
@@ -128,7 +129,7 @@ def generate_table_xmls():
 def format_math_text(text):
     t = text.strip()
     if "logitPYij=1=β0+Xijβ+uj" in t or "logit" in t and "uj" in t:
-        return "logit(P(Y_ij = 1)) = β_0 + X_ij β + u_j"
+        return "logit(P(Y_ij = k)) = β_0k + X_ij β_k + u_jk"
     
     t = re.sub(r'95%\s*CI\s*([0-9\.]+),([0-9\.]+)', r'95% CI [\1, \2]', t)
     t = re.sub(r'\bN=([0-9,]+)', r'N = \1', t)
@@ -203,6 +204,18 @@ def clean_paragraph_text_slashes(p):
             text = text.replace("companionship or hanging out", "companionship")
             t.text = text
 
+def replace_paragraph_prose(p, new_text):
+    """
+    Replaces the text runs of a paragraph while preserving pPr.
+    """
+    for child in list(p):
+        if child.tag != f"{{{W_NS}}}pPr":
+            p.remove(child)
+    r = ET.SubElement(p, f"{{{W_NS}}}r")
+    t = ET.SubElement(r, f"{{{W_NS}}}t")
+    t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+    t.text = new_text
+
 def sync_docx(in_docx, out_docx):
     with zipfile.ZipFile(in_docx, "r") as zin:
         xml_bytes = zin.read("word/document.xml")
@@ -235,15 +248,15 @@ def sync_docx(in_docx, out_docx):
     doc_tree = ET.fromstring(xml_bytes)
     body = doc_tree.find(f"{{{W_NS}}}body")
 
-    print("[1/6] Converting Office Math (<m:oMath>) elements to standard text runs...")
+    print("[1/7] Converting Office Math (<m:oMath>) elements to standard text runs...")
     convert_omath_to_text_runs(body)
 
-    print("[2/6] Stripping alien font overrides and cleaning slashes from text...")
+    print("[2/7] Stripping alien font overrides and cleaning slashes from text...")
     for p in body.findall(f".//{{{W_NS}}}p"):
         strip_alien_rfonts(p)
         clean_paragraph_text_slashes(p)
 
-    print("[3/6] Synchronizing DrawingML extents for figures...")
+    print("[3/7] Synchronizing DrawingML extents for figures...")
     for elem in body.findall(f".//{{{W_NS}}}drawing"):
         blip = elem.find(f".//{{{A_NS}}}blip")
         if blip is not None:
@@ -266,7 +279,7 @@ def sync_docx(in_docx, out_docx):
                     a_ext.set("cy", str(cy))
                 print(f"  [+] Synchronized extents for {rid} ({img_path}): {cx}x{cy} EMUs")
 
-    print("[4/6] Updating tables in-place (with preferred model bolding)...")
+    print("[4/7] Updating tables in-place (with preferred model bolding)...")
     tables = generate_table_xmls()
     body_list = list(body)
     for i, elem in enumerate(body_list):
@@ -293,14 +306,11 @@ def sync_docx(in_docx, out_docx):
                         print(f"  [+] Updated {caption_key} sibling table")
                         break
 
-    print("[5/6] Updating NetHealth Study description and references...")
+    print("[5/7] Updating NetHealth Study description and references...")
     for p in body.findall(f".//{{{W_NS}}}p"):
         p_text = "".join(p.itertext()).strip()
         if "The empirical data for this study come from the NetHealth Study" in p_text:
-            for child in list(p):
-                if child.tag != f"{{{W_NS}}}pPr":
-                    p.remove(child)
-            new_text = (
+            replace_paragraph_prose(p,
                 "The empirical data for this study come from the NetHealth Study (e.g., Liu et al., 2018; "
                 "Sepulvado et al., 2020; Wang et al., 2020), a longitudinal investigation tracking an entire "
                 "undergraduate cohort at the University of Notre Dame from matriculation in August 2015 through "
@@ -309,34 +319,20 @@ def sync_docx(in_docx, out_docx):
                 "stress), and academic performance. Ego-network surveys were administered online via Qualtrics "
                 "at the beginning and conclusion of each semester across repeated waves between Fall 2015 and Spring 2018."
             )
-            r = ET.SubElement(p, f"{{{W_NS}}}r")
-            t = ET.SubElement(r, f"{{{W_NS}}}t")
-            t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
-            t.text = new_text
             print("  [+] Updated NetHealth overview paragraph")
 
-        elif "In each survey wave, participants completed an egocentric network module using a standardized name generator" in p_text:
-            for child in list(p):
-                if child.tag != f"{{{W_NS}}}pPr":
-                    p.remove(child)
-            new_text = (
+        elif "In each survey wave, participants completed an egocentric network module using a standardized name generator" in p_text or "The survey used a standardized open-ended name-generator" in p_text:
+            replace_paragraph_prose(p,
                 "The survey used a standardized open-ended name-generator approach, asking respondents to name "
                 "up to 20 individuals with whom they communicated or interacted: “We would like to know who you "
                 "consider to be in your social network. In the spaces below please list up to 20 people with whom "
                 "you spend time communicating or interacting.” Beginning in Wave 3, respondents could additionally "
                 "retain up to five alters from the preceding wave, allowing for up to 25 named alters per wave."
             )
-            r = ET.SubElement(p, f"{{{W_NS}}}r")
-            t = ET.SubElement(r, f"{{{W_NS}}}t")
-            t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
-            t.text = new_text
             print("  [+] Updated Name Generator description paragraph")
 
         elif "Following name generation, respondents completed detailed name interpreters" in p_text:
-            for child in list(p):
-                if child.tag != f"{{{W_NS}}}pPr":
-                    p.remove(child)
-            new_text = (
+            replace_paragraph_prose(p,
                 "Following name generation, respondents completed detailed name interpreters for each listed alter, "
                 "recording demographic attributes, relationship type, emotional closeness, contact frequency, "
                 "relationship duration, and residential proximity. Crucially, across Waves 2, 3, 4, 5, 7, and 8, "
@@ -350,10 +346,6 @@ def sync_docx(in_docx, out_docx):
                 "and eliminated records with incomplete covariate data. The final analytical sample consists of N = 22,739 "
                 "ego-alter tie observations nested within N = 626 unique respondents across the six support-administered waves."
             )
-            r = ET.SubElement(p, f"{{{W_NS}}}r")
-            t = ET.SubElement(r, f"{{{W_NS}}}t")
-            t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
-            t.text = new_text
             print("  [+] Updated Types of Support description paragraph")
 
     # References in alphabetical order
@@ -412,7 +404,133 @@ def sync_docx(in_docx, out_docx):
             t.text = ref_str
             body.append(new_p)
 
-    print("[6/6] Formatting captions (bolded, unindented, native normal font)...")
+    print("[6/7] Updating narrative connecting LCA to Multilevel Models...")
+    # Update Abstract
+    for p in body.findall(f".//{{{W_NS}}}p"):
+        p_text = "".join(p.itertext()).strip()
+        if "Network analysts often treat tie strength as a single continuum" in p_text or "Theories of social networks often treat tie strength" in p_text:
+            replace_paragraph_prose(p,
+                "Theories of social networks often treat tie strength as a single continuum or conflate it with role relations and resource provision. "
+                "Drawing on multi-wave panel data from the NetHealth Study (N = 22,739 ego–alter tie observations across N = 626 undergraduate participants), "
+                "we untangle the multidimensional structure of tie strength, social roles, and social support. First, using Latent Class Analysis across four support "
+                "exchanges (companionship, advice, comfort, and financial aid), we identify four distinct relational configurations: “Casual Companionship,” "
+                "“Comprehensive Support,” “Instrumental Support,” and “Peripheral Support.” Second, using multilevel generalized linear mixed models with random ego intercepts, "
+                "we predict membership in each inductively identified latent support configuration from tie strength indicators, role relations, and contextual attributes "
+                "while accounting for dyadic clustering. Results show that emotional closeness, relationship duration, and cognitive salience strongly sort ties into "
+                "comprehensive support, whereas peer friendships dominate casual companionship. Furthermore, role relations condition support regimes independently of "
+                "tie strength: family ties show an extraordinary concentration of instrumental support, whereas romantic partners provide unmatched levels of comprehensive backing. "
+                "Men's networks are disproportionately weighted toward casual companionship rather than multiplex support. These findings show that personal communities are "
+                "organized through a functional division of relational labor rather than an undifferentiated gradient of tie strength."
+            )
+            print("  [+] Updated Abstract narrative")
+
+        elif "To address this pervasive conceptual confounding, this study presents an empirical investigation" in p_text:
+            replace_paragraph_prose(p,
+                "To address this pervasive conceptual confounding, this study presents an empirical investigation that systematically decouples tie strength indicators, "
+                "social role relations, and multidimensional support exchanges across personal networks. Analyzing multi-wave ego-network panel data from the NetHealth Study, "
+                "which tracked undergraduate students across collegiate semesters at the University of Notre Dame, we use two analytical methods tailored to this structural "
+                "complexity. Rather than imposing predetermined heuristic categories or assuming an additive hierarchy of support, we first use Latent Class Analysis (poLCA) "
+                "across four primary support indicators (companionship, advice, comfort, and financial assistance) to identify empirical configurations of support inductively. "
+                "We then specify multilevel generalized linear mixed models (GLMMs) with random ego intercepts, directly predicting membership in each identified latent "
+                "support configuration from emotional closeness, interaction frequency, cognitive salience, and duration while conditioning on social role relations, "
+                "ego gender identity, alter attributes, and residential proximity. By bridging inductive latent typologies with confirmatory multilevel regressions, this "
+                "framework provides a rigorous structural foundation for evaluating how personal communities coordinate intimacy, interaction, and mutual assistance "
+                "without definitional circularity."
+            )
+            print("  [+] Updated Introduction conclusion narrative")
+
+        elif "Multilevel Models: Tie Strength, Roles, and Support" in p_text:
+            replace_paragraph_prose(p, "Multilevel Models: Predicting Latent Support Configurations")
+            print("  [+] Updated Multilevel Models heading")
+
+        elif "To test how tie strength indicators and role relations independently predict specific support exchanges" in p_text:
+            replace_paragraph_prose(p,
+                "To test how tie strength indicators and role relations independently predict membership in each of the inductively identified support configurations "
+                "while accounting for the nesting of multiple ties within respondents, we formulated multilevel generalized linear mixed models (GLMMs) with a logit link function. "
+                "Rather than predicting disaggregated individual support items—which would render the latent class typologizing redundant—the dependent variables in this "
+                "confirmatory stage are the four distinct relational regimes identified by the LCA: Comprehensive Support, Casual Companionship, Instrumental Support, and Peripheral Support."
+            )
+            print("  [+] Updated GLMM intro paragraph")
+
+        elif "Where Xij represents the vector of tie-level strength indicators" in p_text or "where X_ij represents the vector" in p_text:
+            replace_paragraph_prose(p,
+                "where X_ij represents the vector of tie-level strength indicators (affective closeness, contact frequency, cognitive salience, and duration), "
+                "social role relations, and dyadic controls, β_k is the class-specific vector of fixed-effect coefficients, and u_jk ~ N(0, σ_uk²) represents "
+                "the ego-specific random intercept for class k. By capturing unobserved respondent-level variance—such as individual baseline sociability, "
+                "reporting thresholds, or dispositional tendencies to perceive support—the inclusion of u_jk prevents standard error deflation and accounts "
+                "for dyadic clustering within personal networks. Latent intraclass correlation coefficients (ICCs) demonstrate substantial ego-level clustering across "
+                "all four configurations, ranging from 0.248 for Casual Companionship (σ_u² = 1.082) to 0.307 for Comprehensive Support (σ_u² = 1.457), "
+                "0.356 for Instrumental Support (σ_u² = 1.821), and 0.380 for Peripheral Support (σ_u² = 2.016).\n\n"
+                "From an estimation standpoint, specifying separate binary GLMMs for each latent configuration offers distinct methodological advantages over "
+                "simultaneous multinomial mixed models (such as mclogit::mblogit). In dyadic network data, certain cross-classifications between role relations "
+                "and specialized support regimes contain extreme cell sparsity—most notably, acquaintances providing instrumental kin support (n = 1). Under frequentist "
+                "Fisher scoring or Newton-Raphson algorithms in multinomial settings, these sparse cells induce quasi-complete separation, producing non-convergence "
+                "warnings and unstable covariance matrices. The binary GLMM framework avoids these computational pathologies, preserves full categorical granularity across "
+                "all role categories and duration intervals, and allows the respondent-level variance (σ_uk²) to vary freely across distinct support regimes. Table 3 presents "
+                "the estimated odds ratios (ORs) and 95% confidence intervals from these multilevel models across the four latent support configurations."
+            )
+            print("  [+] Updated GLMM methodology and equation explanation")
+
+        elif "Table 3. Multilevel Mixed-Effects Logistic Regression Models Predicting Social Support Exchanges" in p_text:
+            replace_paragraph_prose(p, "Table 3. Multilevel Mixed-Effects Logistic Regression Models Predicting Latent Social Support Configurations")
+            print("  [+] Updated Table 3 caption")
+
+        elif "Figure 2. Adjusted Odds Ratios from Multilevel Logistic GLMMs Predicting Social Support Exchanges" in p_text:
+            replace_paragraph_prose(p, "Figure 2. Adjusted Odds Ratios from Multilevel Logistic GLMMs Predicting Latent Social Support Configurations")
+            print("  [+] Updated Figure 2 caption")
+
+        elif "Note: Sample size N = 22,739 tie observations nested within N = 626 unique egos. Models include random ego intercepts ((1 | egoid))" in p_text or "Note: Sample size N=22,739" in p_text:
+            replace_paragraph_prose(p,
+                "Note: Sample size N = 22,737 tie observations nested within N = 581 unique egos (ties with unknown duration omitted). "
+                "Models include random ego intercepts ((1 | egoid)). Odds ratios (OR) are reported with 95% confidence intervals in parentheses. "
+                "Statistical significance: * p < 0.05, ** p < 0.01, *** p < 0.001."
+            )
+            print("  [+] Updated Table 3 note")
+
+        elif "Note: Forest plot of adjusted odds ratios and 95% confidence intervals estimated from multilevel logistic regression models with random ego intercepts (N=22,739" in p_text or "Note: Forest plot of adjusted odds ratios and 95% confidence intervals estimated from multilevel logistic regression models with random ego intercepts (N = 22,739" in p_text:
+            replace_paragraph_prose(p,
+                "Note: Forest plot of adjusted odds ratios and 95% confidence intervals estimated from multilevel logistic regression models with random ego intercepts "
+                "(N = 22,737 ties across N = 581 egos). The dashed vertical line indicates the null effect (OR = 1.0). The horizontal axis is plotted on a logarithmic scale."
+            )
+            print("  [+] Updated Figure 2 note")
+
+        elif "Figure 2 visualizes the estimated odds ratios across the four social support outcomes" in p_text:
+            replace_paragraph_prose(p,
+                "Figure 2 visualizes the estimated odds ratios across the four latent social support configurations, allowing for direct comparison of how tie strength and role relations sort personal networks into distinct relational regimes. The parameter estimates demonstrate clear empirical patterns:\n\n"
+                "First, emotional closeness and long-term history serve as the primary engines sorting ties into Comprehensive Support. Relative to ties evaluated as “Close,” alters characterized as “Especially Close” exhibit more than a sevenfold increase in the odds of providing comprehensive support (OR = 7.09, 95% CI [6.46, 7.79]), whereas “Less Close” ties show an 77% reduction in odds (OR = 0.23, p < 0.001). Relationship duration demonstrates powerful cumulative returns: ties maintained for 5–10 years (OR = 2.10, p < 0.001) and more than 10 years (OR = 2.37, p < 0.001) are more than twice as likely to provide comprehensive backing compared to newer ties (2–4 years). Cognitive salience also enhances access (Top 5: OR = 1.36, p < 0.001), while daily activation yields a modest elevation (OR = 1.22, p < 0.001). Net of tie strength, romantic partners are more than five times as likely as friends to occupy the comprehensive support regime (OR = 5.20, 95% CI [4.08, 6.63])."
+            )
+            print("  [+] Updated Figure 2 intro and Comprehensive Support paragraph")
+
+        elif "Second, contact frequency functions primarily as an engine of companionship" in p_text:
+            replace_paragraph_prose(p,
+                "Second, Casual Companionship is overwhelmingly structured by peer friendships and moderate affective intimacy. Relative to friends, family members (OR = 0.40, p < 0.001), romantic partners (OR = 0.21, p < 0.001), and acquaintances (OR = 0.21, p < 0.001) are all substantially less likely to provide exclusively casual companionship. Interestingly, ties evaluated as “Especially Close” show sharply lower odds of remaining in this class (OR = 0.24, p < 0.001), because extreme affective closeness shifts ties into Comprehensive Support. Similarly, alters nominated in the Top 5 salience tier are less likely to be casual companions (OR = 0.69, p < 0.001), confirming that cognitive retrieval prioritizes substantive confidants over recreational peers."
+            )
+            print("  [+] Updated Casual Companionship paragraph")
+
+        elif "Third, cognitive salience exhibits a consistent, independent relationship with support receipt" in p_text:
+            replace_paragraph_prose(p,
+                "Third, Instrumental Support is governed by kinship obligations rather than campus proximity or daily interaction. Family ties exhibit a staggering thirteen-fold elevation in the odds of providing instrumental support relative to friends (OR = 12.98, 95% CI [8.29, 20.30]). By contrast, acquaintances virtually never provide instrumental backing (OR < 0.01). Daily contact frequency is negatively associated with instrumental support (OR = 0.77, p = 0.005), reflecting the spatial dispersion of collegiate students from the parental households that provide financial and material backing. Long-standing duration (> 10 years: OR = 1.81, p = 0.035) and Top 5 cognitive salience (OR = 1.43, p < 0.001) further underscore that instrumental ties represent core familial anchors."
+            )
+            print("  [+] Updated Instrumental Support paragraph")
+
+        elif "Fourth, relationship duration demonstrates cumulative advantages for expressive and material exchanges" in p_text:
+            replace_paragraph_prose(p,
+                "Fourth, Peripheral Support captures relational ties characterized by weak sentiments, formal roles, and minimal resource transmission. Ties evaluated as “Less Close” (OR = 3.71, p < 0.001) and “Distant” (OR = 3.61, p < 0.001) show nearly fourfold increases in the odds of being peripheral relative to “Close” ties, while “Especially Close” ties are rarely peripheral (OR = 0.20, p < 0.001). Role relations exhibit sharp sorting: acquaintances (OR = 9.50, p < 0.001) and other non-intimate roles (OR = 12.03, p < 0.001) are heavily concentrated in the peripheral tier. Long-term relational duration acts as a protective buffer against marginalization (5–10 years: OR = 0.49, p < 0.001)."
+            )
+            print("  [+] Updated Peripheral Support paragraph")
+
+        elif "Fifth, role relations exert pronounced conditioning effects net of all tie strength indicators" in p_text:
+            replace_paragraph_prose(p,
+                "Finally, respondent gender identity and organizational context reveal pronounced structural differences. Men report substantially lower odds of maintaining ties in Comprehensive Support (OR = 0.25, p < 0.001), but more than a threefold increase in the odds of Casual Companionship ties (OR = 3.04, p < 0.001), illustrating a stark gendered division where men's personal communities are disproportionately weighted toward activity-based socializing rather than multiplex expressive confiding. Roommates show modestly higher odds of Comprehensive Support (OR = 1.17, p = 0.046), whereas shared dormitory residence reduces the likelihood of ties falling into Instrumental Support (OR = 0.50, p = 0.012) or Peripheral Support (OR = 0.78, p = 0.026)."
+            )
+            print("  [+] Updated Gender and Context paragraph")
+
+        elif "Finally, individual and contextual traits highlight structural asymmetries in personal communities" in p_text:
+            # Remove redundant paragraph if already merged into fifth
+            replace_paragraph_prose(p, "")
+            print("  [+] Cleared redundant paragraph")
+
+    print("[7/7] Formatting captions (bolded, unindented, native normal font)...")
     for p in body.findall(f".//{{{W_NS}}}p"):
         p_text = "".join(p.itertext()).strip()
         is_caption = any(p_text.startswith(prefix) for prefix in [

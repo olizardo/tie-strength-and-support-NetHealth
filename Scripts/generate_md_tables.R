@@ -116,32 +116,38 @@ terms_order <- c(
   "ego_genderMen" = "Ego Gender: Men (ref: Women)"
 )
 
-# Build table across outcomes: supp_hang, supp_adv, supp_comf, supp_fin
+# Build table across latent support outcomes: supp_comp, supp_cas, supp_inst, supp_per
 format_cell <- function(sub_df, trm) {
   row <- sub_df %>% filter(term == trm)
   if (nrow(row) == 0) return("-")
   est <- row$estimate[1]
+  se <- row$std_error[1]
   p <- row$p_value[1]
   sig <- if (p < 0.001) "***" else if (p < 0.01) "**" else if (p < 0.05) "*" else ""
+  
+  # Handle sparse cells with separation (extreme SE)
+  if (se > 10 || est < 0.001) {
+    return("< 0.01 (—)")
+  }
   sprintf("%.2f%s (%.2f, %.2f)", est, sig, row$conf_low[1], row$conf_high[1])
 }
 
-hang_df <- glmm_res %>% filter(outcome == "supp_hang")
-adv_df  <- glmm_res %>% filter(outcome == "supp_adv")
-comf_df <- glmm_res %>% filter(outcome == "supp_comf")
-fin_df  <- glmm_res %>% filter(outcome == "supp_fin")
+comp_df <- glmm_res %>% filter(outcome == "supp_comp")
+cas_df  <- glmm_res %>% filter(outcome == "supp_cas")
+inst_df <- glmm_res %>% filter(outcome == "supp_inst")
+per_df  <- glmm_res %>% filter(outcome == "supp_per")
 
 t3_lines <- c(
-  "| Predictor Variable | Companionship OR (95% CI) | Advice OR (95% CI) | Comfort OR (95% CI) | Financial OR (95% CI) |",
+  "| Predictor Variable | Comprehensive OR (95% CI) | Casual Companionship OR (95% CI) | Instrumental OR (95% CI) | Peripheral OR (95% CI) |",
   "|:---|:---:|:---:|:---:|:---:|",
   sapply(names(terms_order), function(trm) {
     lbl <- terms_order[trm]
     sprintf("| %s | %s | %s | %s | %s |",
             lbl,
-            format_cell(hang_df, trm),
-            format_cell(adv_df, trm),
-            format_cell(comf_df, trm),
-            format_cell(fin_df, trm))
+            format_cell(comp_df, trm),
+            format_cell(cas_df, trm),
+            format_cell(inst_df, trm),
+            format_cell(per_df, trm))
   }, USE.NAMES = FALSE)
 )
 writeLines(t3_lines, "cache/table3_glmm_models.md")
