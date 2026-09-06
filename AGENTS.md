@@ -816,3 +816,107 @@ scale_fill_manual(values = COLOR_CREDIBILITY, name = "Directional Credibility")
 
 ## Bayesian Modeling & `brms` Caching
 - **Always Use `file_refit = "on_change"`:** When writing `brms::brm()` model-fitting scripts that cache results via the `file = ...` argument (especially for HPC array jobs), you **must** include `file_refit = "on_change"` (or `"always"` if explicitly requested). Without this, `brms` will load stale models from disk and will not refit the model even if the underlying data subset, sample size, or formula has changed. This prevents catastrophic silent errors where updated datasets are ignored in favor of old cached runs.
+
+
+---
+
+## Project Architecture: Tie Strength, Role Relations, and Social Support in Ego Networks
+
+### 1. Overview & Collaborators
+- **Project Title:** Tie Strength, Role Relations, and Social Support in Ego Networks
+- **Authors:** David Hachen and Omar Lizardo
+- **Google Doc URL:** https://docs.google.com/document/d/1WdwlqAfHRr7J6rb21Ri6Iq2Iay8lFFTTtqCaBEZznb0
+- **Google Doc ID:** `1WdwlqAfHRr7J6rb21Ri6Iq2Iay8lFFTTtqCaBEZznb0`
+- **Overleaf Project URL:** https://www.overleaf.com/project/6a9dc2d9cd05b63f5cbddab8
+- **Overleaf Git Endpoint:** `https://git.overleaf.com/6a9dc2d9cd05b63f5cbddab8`
+- **GitHub Repository:** https://github.com/olizardo/tie-strength-and-support-NetHealth.git
+- **Data Source:** NetHealth Study (University of Notre Dame Class of 2019, longitudinal panel tracking from matriculation in August 2015 through graduation in May 2019).
+- **Analytic Sample:** $N = 22,739$ ego-alter tie observations nested within $N = 626$ unique respondents across Waves 2, 3, 4, 5, 7, and 8 ($N = 22,737$ ties across $N = 581$ egos with complete covariates in GLMM models).
+
+### 2. Theoretical & Methodological Architecture
+
+#### A. Decoupling Relational Frames (Lizardo 2024; Marsden & Campbell 1984)
+The project resolves the persistent conceptual confounding of tie strength with social roles and functional resource exchanges. Building on Marsden & Campbell (1984) and Lizardo (2024), we decouple:
+1. *Sentiment frames* (subjective emotional closeness)
+2. *Behavioral interaction frames* (contact frequency)
+3. *Relational history* (relationship duration)
+4. *Cognitive salience* (name-generator retrieval rank)
+5. *Role frames* (friend, family, romantic partner, acquaintance)
+6. *Exchange frames* (functional social support provision)
+
+#### B. Unified Two-Stage Modeling Architecture
+To eliminate the disconnect between inductive typologizing and confirmatory regression:
+1. **Stage 1: Inductive Latent Class Analysis (poLCA)**:
+   - Evaluates latent configurations across four binary support items measured with exact NetHealth Qualtrics survey wording:
+     - **Companionship** (`supphang`): *“Somebody you have hung out with when feeling like company”*
+     - **Advice** (`suppadv`): *“Somebody you went to for advice when dealing with a life problem”*
+     - **Comfort** (`suppcomf`): *“Somebody you counted on to comfort you when something bad happened”*
+     - **Financial Assistance** (`suppfin`): *“Somebody you have gone to when in financial need”*
+   - Identifies an optimal 4-class solution based on AIC/BIC minimization:
+     - **Comprehensive Support** (41.5%): High advice (0.99), comfort (0.97), companionship (0.99), moderate financial (0.21).
+     - **Casual Companionship** (45.8%): High companionship (1.00), modest advice (0.26) and comfort (0.16), zero financial (0.00).
+     - **Instrumental Support** (4.3%): High financial (0.68), advice (0.88), comfort (0.83), low companionship (0.29).
+     - **Peripheral Support** (8.4%): Depressed endorsement across all domains.
+2. **Stage 2: Confirmatory Multilevel Logistic GLMMs (`lme4::glmer`)**:
+   - Rather than predicting raw disaggregated items, models predict **membership in the four latent support configurations directly**:
+     $$\text{logit}(P(Y_{ij} = k)) = \beta_{0k} + \mathbf{X}_{ij}\boldsymbol{\beta}_k + u_{jk}, \quad u_{jk} \sim \mathcal{N}(0, \sigma_{uk}^2)$$
+   - Latent ICCs demonstrate substantial ego-level clustering: 0.248 for Casual Companionship ($\sigma_u^2 = 1.082$), 0.307 for Comprehensive Support ($\sigma_u^2 = 1.457$), 0.356 for Instrumental Support ($\sigma_u^2 = 1.821$), and 0.380 for Peripheral Support ($\sigma_u^2 = 2.016$).
+   - **Why Binary GLMMs Over Multinomial Logit (`mblogit`)**: Extreme dyadic cell sparsity (e.g., only 1 acquaintance in Instrumental Support) causes quasi-complete separation, non-convergence, and unstable covariance matrices in simultaneous multinomial estimators. Binary GLMMs converge cleanly without category collapsing and allow ego variance to vary across support regimes.
+
+### 3. Key Findings & Empirical Regularities
+1. **Comprehensive Support**: Driven by emotional intimacy (Especially Close: $\text{OR} = 7.09$), relationship longevity ($> 10$ years: $\text{OR} = 2.37$), cognitive salience (Top 5: $\text{OR} = 1.36$), and romantic partners ($\text{OR} = 5.20$). Men have 75% lower odds ($\text{OR} = 0.25$).
+2. **Casual Companionship**: Governed by peer friendships. High closeness lowers odds ($\text{OR} = 0.24$) because intimate ties transition into Comprehensive Support. Men have threefold higher odds ($\text{OR} = 3.04$).
+3. **Instrumental Support**: Governed by kinship obligation (Family: $\text{OR} = 12.98, p < 0.001$), long duration ($\text{OR} = 1.81$), and Top 5 salience ($\text{OR} = 1.43$). Daily interaction is lower ($\text{OR} = 0.77$) due to geographic dispersion from parental households during college.
+4. **Peripheral Support**: Concentrated among distant/less close ties ($\text{OR} \approx 3.6$ to $3.7$) and non-intimate roles (acquaintances: $\text{OR} = 9.50$, other roles: $\text{OR} = 12.03$).
+
+### 4. Table and Figure Inventory
+- **Table 1 (`tab:lca_fit`)**: Model Fit Statistics for Latent Class Analysis ($K = 2 \dots 5$) with the preferred 4-Class row bolded.
+- **Table 2 (`tab:lca_crosstabs`)**: Distribution of Latent Support Classes across Social Roles and Emotional Closeness (single-term column labels without slashes).
+- **Pruning of Table 3**: The large regression table was pruned in favor of the visual forest plot (Figure 2), eliminating redundant presentation and avoiding illegibly small fonts.
+- **Figure 1 (`fig:lca_profiles`)**: Conditional Item Response Probabilities grouped by latent class and colored by support item (`scale_fill_brewer(palette = "Set2")`).
+- **Figure 2 (`fig:glmm_odds`)**: Forest plot of adjusted odds ratios from multilevel logistic GLMMs with bounded x-axis ($[0.1, 20]$), resolving the collapsed marker issue resulting from sparse-cell separation.
+
+### 5. Current Directory Structure & Asset Taxonomy
+```
+tie-strength-and-support-NetHealth/
+├── AGENTS.md                         # Global & project-specific guidelines
+├── README.md                         # Project overview and replication commands
+├── manuscript.tex                    # Standalone LaTeX manuscript (canonical authoring source)
+├── references.bib                    # Complete BibTeX database (19 references including R packages)
+├── manuscript.pdf                    # Compiled 15-page publication PDF (0 errors, 0 warnings)
+├── draft_manuscript.md               # Local Markdown manuscript mirror
+├── Manchester Talk.pptx              # Original 2018 Manchester presentation slides
+├── data/                             # Analytical datasets (.gitignore protected)
+│   ├── tie_support_analytical.rds    # Cleaned dyadic tie dataset (N = 22,739)
+│   ├── tie_support_with_lca.rds      # Dataset appended with modal LCA classes
+│   ├── lca_optimal_model.rds         # Fitted poLCA model object (K = 4)
+│   └── glmm_fitted_models.rds        # Fitted glmer model objects
+├── Scripts/                          # Consolidated R and Python scripts (capital S)
+│   ├── 01_prepare_data.R             # Data ingestion and harmonization
+│   ├── 02_latent_class_support.R     # poLCA estimation and Figure 1 generation
+│   ├── 03_multilevel_glmm.R          # Multilevel GLMMs and Figure 2 generation
+│   ├── generate_md_tables.R          # Pre-computes markdown tables to cache/
+│   ├── sync_manuscript.py            # OpenXML DOM table/figure injector
+│   └── sync_manuscript.R             # Master Google Drive sync driver
+├── output/
+│   ├── figures/                      # Output PNG figures
+│   └── tables/                       # Output CSV regression and fit tables
+├── Plots/                            # Symlinked/mirrored publication figures (fig1, fig2)
+└── cache/                            # Intermediate markdown tables (table1, table2, table3)
+```
+
+### 6. Technical Lessons & Best Practices
+1. **Consolidated `Scripts/` Directory (Zero Linux-Overleaf Case Collisions)**:
+   - Never maintain both a lowercase `scripts/` and an uppercase `Scripts/` in the same project. Overleaf operates on a case-insensitive filesystem layer and will collapse the two directories, triggering auto-generated branch collisions (`overleaf-YYYY-MM-DD-HHMM`). Standardize strictly on `Scripts/`.
+2. **Direct Overleaf Git Remote via `~/.netrc`**:
+   - Overleaf discontinued password authentication; use **Git Authentication Tokens** only.
+   - Username must always be the literal string **`git`** (not email).
+   - Configure credentials in `~/.netrc` (`chmod 600`) and set remote to `https://git.overleaf.com/<PROJECT_ID>`.
+3. **Handling Sparse Cells in Forest Plots (Preventing Collapsed Markers)**:
+   - In dyadic network regressions with rare categorical combinations (e.g. $n = 1$ acquaintance in instrumental support), logistic GLMMs produce extreme separation ($	ext{SE} > 200$, upper $	ext{CI} > 10^{200}$).
+   - On a logarithmic ggplot axis (`scale_x_log10()`), unbounded upper CIs stretch the axis astronomically, squishing all realistic estimates ($0.1$ to $20$) into an invisible cluster near zero.
+   - Always filter or clamp degenerate points (`std_error > 10`) and explicitly bound the display limits (`scale_x_log10(limits = c(0.1, 20))`).
+4. **Group by Latent Class, Color by Item in LCA Plots**:
+   - In conditional item response plots for LCA, group bars by latent class on the axis and color by item. This allows readers to evaluate the multidimensional profile of each latent class at a single glance.
+5. **Eliminating Redundant Tables in Favor of Forest Plots**:
+   - For multi-outcome regression comparisons, a clean, dodged forest plot (Figure 2) communicates effect magnitudes and confidence intervals far more effectively than dense multi-column tables. Prune redundant tables to prevent clutter and avoid unreadably small fonts.
