@@ -1,0 +1,249 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[authoryear,round]{natbib}
+\usepackage{setspace}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!80!black,
+  citecolor=blue!80!black,
+  urlcolor=blue!80!black
+}
+
+\captionsetup{
+  labelfont=bf,
+  textfont=bf,
+  justification=justified,
+  singlelinecheck=false
+}
+
+\onehalfspacing
+
+\title{\textbf{Tie Strength, Role Relations, and Social Support in Egocentric Networks}}
+\author{
+  \textbf{Omar Lizardo}\thanks{Department of Sociology, University of California, Los Angeles. Email: \texttt{olizardo@soc.ucla.edu}.}
+}
+\date{September 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Theories of social networks often treat tie strength as a single continuum or conflate it with role relations and resource provision. Drawing on multi-wave panel data from the NetHealth Study ($N = 22,739$ ego--alter tie observations across $N = 626$ undergraduate participants), we untangle the multidimensional structure of tie strength, social roles, and social support. First, using Latent Class Analysis across four support exchanges (companionship, advice, comfort, and financial aid), we identify four distinct relational configurations: ``Casual Companionship,'' ``Comprehensive Support,'' ``Instrumental Support,'' and ``Peripheral Support.'' Second, using multilevel generalized linear mixed models with random ego intercepts, we predict membership in each inductively identified latent support configuration from tie strength indicators, role relations, and contextual attributes while accounting for dyadic clustering. Results show that emotional closeness, relationship duration, and cognitive salience strongly sort ties into comprehensive support, whereas peer friendships dominate casual companionship. Furthermore, role relations condition support regimes independently of tie strength: family ties show an extraordinary concentration of instrumental support, whereas romantic partners provide unmatched levels of comprehensive backing. Men's networks are disproportionately weighted toward casual companionship rather than multiplex support. These findings show that personal communities are organized through a functional division of relational labor rather than an undifferentiated gradient of tie strength.
+\end{abstract}
+
+\vspace{1em}
+\noindent \textbf{Keywords:} tie strength; social support; ego networks; latent class analysis; multilevel GLMM; role relations; NetHealth study.
+
+\clearpage
+
+\section{Introduction}
+
+The concept of tie strength occupies an indispensable role in structural sociology, social network analysis, and theories of social exchange \citep{borgatti2009network, granovetter1973strength, kitts2014beyond, marsden1984measuring}. In his seminal formulation, \citet[p.~1361]{granovetter1973strength} defined tie strength as a ``combination of the amount of time, the emotional intensity, the intimacy (mutual confiding), and the reciprocal services which characterize the tie.'' While this multidimensional definition highlighted the multifaceted nature of interpersonal bonds, it simultaneously blended distinct conceptual domains into a single construct, conflating subjective sentiments (emotional closeness), observable behaviors (interaction frequency), relational history (duration), and functional exchanges (the provision of tangible assistance and social support).
+
+In an influential methodological intervention, \citet{marsden1984measuring} clarified this conceptual ambiguity by distinguishing between \textit{indicators} of tie strength and \textit{predictors} of tie strength. Indicators represent the internal properties that constitute the strength of the bond itself, such as subjective emotional closeness, frequency of communication, and relationship duration. Predictors, by contrast, represent the structural and social contexts that generate or sustain strong ties, including social role relations (such as kin, friends, romantic partners, and acquaintances), sociodemographic similarity, and shared institutional affiliations \citep{feld1982social}. Despite this conceptual clarification, empirical scholarship has frequently slipped back into definitional conflation. In empirical applications, researchers often assume that kin and close friends are ``strong ties'' by definition, while neighbors, coworkers, and acquaintances are assumed to be ``weak ties'' \citep{lin2001social, wellman1990different}. This conflation obscures crucial empirical variation: individuals routinely maintain emotionally distant or infrequently contacted relatives alongside intensely close and supportive casual associates.
+
+As \citet{lizardo2024theorizing} argues in a recent theoretical formulation, this persistent conflation stems from a deeper failure to recognize that the concept of a social tie is organized across multiple distinct cognitive and relational frames. Specifically, tie conceptualizations routinely collapse four autonomous dimensions: \textit{role frames} denoting categorical social positions (such as kin, friend, or coworker), \textit{sentiment frames} capturing affective evaluations (such as closeness, liking, or trust), \textit{behavioral interaction frames} indexing contact and communication patterns (such as daily or weekly activation), and \textit{exchange frames} encompassing the functional transmission of resources (such as companionship, advice, comfort, or financial assistance). When researchers treat one frame as an automatic index of another---such as assuming that role relations define tie strength, that high interaction frequency entails emotional intimacy, or that strong ties universally provide all forms of social support---they commit a category mistake that obscures the underlying division of relational labor in personal networks. Role relations may carry institutional expectations of solidarity, yet actual sentiments and behavioral activations vary substantially within every role category \citep{marsden1984measuring}. Similarly, frequent interaction is often driven by situational co-presence in shared organizational foci rather than affective depth \citep{feld1982social, kitts2014beyond}, while the provision of specialized support is bounded by domain-specific norms and resource affordances rather than a generalized gradient of strength.
+
+To address this pervasive conceptual confounding, this study presents an empirical investigation that systematically decouples tie strength indicators, social role relations, and multidimensional support exchanges across personal networks. Analyzing multi-wave ego-network panel data from the NetHealth Study, which tracked undergraduate students across collegiate semesters at the University of Notre Dame, we use two analytical methods tailored to this structural complexity. Rather than imposing predetermined heuristic categories or assuming an additive hierarchy of support, we first use Latent Class Analysis (poLCA) across four primary support indicators (companionship, advice, comfort, and financial assistance) to identify empirical configurations of support inductively. We then specify multilevel generalized linear mixed models (GLMMs) with random ego intercepts, directly predicting membership in each identified latent support configuration from emotional closeness, interaction frequency, cognitive salience, and duration while conditioning on social role relations, ego gender identity, alter attributes, and residential proximity. By bridging inductive latent typologies with confirmatory multilevel regressions, this framework provides a rigorous structural foundation for evaluating how personal communities coordinate intimacy, interaction, and mutual assistance without definitional circularity.
+
+\section{Theoretical Background and Research Questions}
+
+Social ties serve as the fundamental conduits through which individuals access psychosocial resources, instrumental help, and novel information \citep{borgatti2009network, lin2001social}. Building on the structural taxonomies proposed by \citet{borgatti2009network} and \citet{kitts2014beyond}, interpersonal connections can be characterized across four analytical planes: role relations (formal social positions such as family, friend, romantic partner, or coworker), interpersonal sentiments (affective closeness, trust, and liking), behavioral interactions (communication frequency and shared activities), and resource exchanges (the provision of informational, emotional, and material support).
+
+\citet{marsden1984measuring} measurement model established that emotional closeness serves as the primary and most valid empirical indicator of tie strength, whereas contact frequency functions as an imperfect indicator that is heavily contaminated by institutional and organizational constraints. For example, coworkers or dormmates may interact daily due to physical proximity rather than mutual confiding, whereas geographically separated kin may interact infrequently while maintaining profound emotional intimacy. Similarly, cognitive salience---the cognitive accessibility of an alter as reflected in the order in which they are retrieved during name generation---reflects psychological prominence that may diverge from sheer contact volume \citep{kitts2014beyond}. Finally, relationship duration reflects the temporal accumulation of relational investments, yet whether longevity translates into active support depends heavily on role context.
+
+As \citet{smith2021continued} emphasizes in a recent synthesis of ego-network research, the measurement of social support represents the single most common substantive application of personal network data \citep{cornwell2008social, fischer1982dwell, wellman1990different}. Yet empirical investigations in this tradition often rely on aggregate summary measures---such as total network size or simple degree counts of available supporters---treating personal networks as an undifferentiated reservoir of assistance. As \citet{smith2021continued} argues, this aggregate approach obscures the reality that different alters offer fundamentally different resources: some provide material aid (financial assistance), others offer informational guidance (advice), and others supply expressive backing (emotional comfort) or everyday sociability. Because ego network surveys collect detailed information on the specific nature of each dyadic bond---including emotional closeness, contact frequency, duration, and role category---they provide the empirical resolution required to examine how distinct dimensions of tie strength activate specific functional exchanges. Decoupling these dimensions at the dyadic level reveals how personal communities organize a specialized division of relational labor, rather than assuming that strong ties universally provide all forms of aid.
+
+These conceptual distinctions motivate several core empirical questions regarding how tie strength and role relations interact to structure social support provision:
+
+First, how do the empirical indicators of tie strength correlate across different social role relations? If emotional closeness and interaction frequency represent partially autonomous dimensions, we should observe distinct tie-strength profiles across roles. In particular, family ties are expected to exhibit high emotional closeness despite lower everyday activation frequency compared to peer relationships on a residential campus.
+
+Second, what empirical configurations of social support characterize personal networks when evaluated without arbitrary heuristic binning? Traditional analyses often assume an additive hierarchy of support, presuming that strong ties provide all forms of support while weak ties provide none. By applying Latent Class Analysis, we examine whether support exchanges cluster into specialized functional bundles, such as purely expressive support, casual socializing, or comprehensive multi-domain aid.
+
+Third, when accounting for the clustering of ties within egos, how do emotional closeness, interaction frequency, and duration predict membership in distinct support configurations? We expect emotional closeness to serve as the primary determinant of comprehensive multi-domain support, whereas interaction frequency should primarily sustain casual companionship.
+
+Fourth, to what extent do role relations condition support configurations independently of tie strength? Certain resources, particularly financial assistance, involve material costs and institutional norms of obligation that may be restricted to specific role categories (such as family or romantic partners), regardless of how frequently an alter is contacted or how emotionally close they are reported to be.
+
+\section{Data and Analytical Sample}
+
+The empirical data for this study come from the NetHealth Study \citep[e.g.,][]{liu2018network, sepulvado2020predicting, wang2020neither}, a longitudinal investigation tracking an entire undergraduate cohort at the University of Notre Dame from matriculation in August 2015 through graduation in May 2019. The NetHealth study was designed to investigate the reciprocal co-evolution of social network structures, health behaviors (physical activity, sleep patterns, stress), and academic performance. Network surveys were administered online via Qualtrics at the beginning and conclusion of each semester across repeated waves between Fall 2015 and Spring 2018.
+
+In each survey wave, participants completed an egocentric network module using a standardized open-ended name generator: ``We would like to know who you consider to be in your social network. In the spaces below please list up to 20 people with whom you spend time communicating or interacting.'' Beginning in Wave 3, respondents could additionally retain up to five alters from the preceding wave, allowing for up to 25 named alters per wave. Following name generation, respondents completed detailed name interpreters for each listed alter, recording demographic attributes, relationship type, emotional closeness, contact frequency, relationship duration, and residential proximity. Crucially, across Waves 2, 3, 4, 5, 7, and 8, respondents were administered a dedicated social support module inquiring whether each nominated alter had provided four specific forms of assistance over the preceding months: (1) companionship (\texttt{supphang}), denoting time spent socializing outside formal obligations; (2) advice (\texttt{suppadv}), representing guidance regarding personal or academic matters; (3) comfort (\texttt{suppcomf}), reflecting empathy, reassurance, or sympathetic listening during stressful periods; and (4) financial assistance (\texttt{suppfin}), encompassing money, loans, or emergency material aid.
+
+For egos who were administered the support battery, unendorsed items represent the documented absence of that support type. We restricted the analytical sample to egos who completed the support module in each respective wave and eliminated records with incomplete covariate data. The final analytical sample consists of $N = 22,739$ ego--alter tie observations nested within $N = 626$ unique respondents across the six support-administered waves.
+
+Tie strength indicators were coded following standardized survey categories: emotional closeness was recorded on a four-level ordinal scale (``Distant,'' ``Less than Close,'' ``Close,'' and ``Especially Close''); reported contact frequency was measured as ``Less than Monthly,'' ``Monthly,'' ``Weekly,'' or ``Daily''; relationship duration was categorized into four temporal intervals (``Less than 1 Year,'' ``2--4 Years,'' ``5--10 Years,'' and ``More than 10 Years''); and cognitive salience was indexed both by exact nomination order (integers 1 through 20) and grouped into ordinal tiers (``Top 5,'' ``Middle 10,'' and ``Bottom 5''). Social role relations were standardized into five substantive categories: ``Friend'' (72.8\% of nominations), ``Family'' (21.4\%), ``Romantic Partner'' (2.8\%), ``Acquaintance'' (1.4\%), and ``Other Role'' (1.6\%). Contextual controls include ego gender identity (women vs.\ men), alter gender, shared dormitory residence, and roommate status.
+
+\section{Latent Typologies of Social Support}
+
+To identify the underlying structure of social support provision without imposing arbitrary Boolean grouping heuristics, we estimated Latent Class Analysis (\texttt{poLCA}) models across the four binary support indicators. We evaluated latent class solutions ranging from $K = 2$ to $K = 5$ classes. Table~\ref{tab:lca_fit} reports the model fit statistics across the candidate specifications, including the log-likelihood, number of estimated parameters, Akaike Information Criterion (AIC), Bayesian Information Criterion (BIC), and classification entropy.
+
+\begin{table}[htbp]
+\centering
+\caption{Model Fit Statistics for Latent Class Analysis of Social Support Exchanges}
+\label{tab:lca_fit}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc@{}}
+\toprule
+Latent Classes & Log-Likelihood & Par & AIC & BIC & Entropy \\
+\midrule
+2 Classes & -42,348.5 & 9 & 84,714.9 & 84,787.2 & 0.760 \\
+3 Classes & -41,670.9 & 14 & 83,369.8 & 83,482.2 & 0.858 \\
+\textbf{4 Classes} & \textbf{-41,626.6} & \textbf{19} & \textbf{83,291.2} & \textbf{83,443.8} & \textbf{0.766} \\
+5 Classes & -41,626.6 & 24 & 83,301.2 & 83,493.9 & 0.722 \\
+\bottomrule
+\end{tabular*}
+\vspace{0.5em}
+\parbox{\textwidth}{\footnotesize \textbf{Note:} Model estimation based on $N = 22,739$ ego--alter tie observations across Waves 2, 3, 4, 5, 7, and 8 of the NetHealth Study. Par indicates the number of estimated parameters. Optimal fit is identified by the four-class solution (bolded) based on AIC and BIC minimization.}
+\end{table}
+
+As reported in Table~\ref{tab:lca_fit}, moving from a two-class model to a three-class model yields a substantial reduction in both AIC ($\Delta\text{AIC} = -1,345.2$) and BIC ($\Delta\text{BIC} = -1,305.0$). Progressing from three to four classes provides a further improvement in model fit ($\text{AIC} = 83,291.2$; $\text{BIC} = 83,443.8$), while preserving high classification entropy ($0.766$). When moving to a five-class model, the BIC increases from $83,443.8$ to $83,493.9$ and the log-likelihood fails to improve, indicating parameter redundancy and overfitting. Consequently, the four-class solution was selected as the optimal empirical representation of social support configurations in this collegiate population.
+
+From a methodological standpoint, the unit of analysis in this latent class model is the dyadic ego--alter tie observation ($N = 22,739$). Because ties are nested within respondents ($N = 626$), reports of social support exhibit moderate-to-substantial clustering at the ego level. Unconditional mixed-effects logistic models indicate that latent intraclass correlation coefficients (ICCs) range from 0.17 for financial aid to 0.29 for advice, 0.33 for comfort, and 0.34 for companionship, showing that between 17\% and 34\% of the variance in support reporting is attributable to unobserved respondent-level factors. With four binary indicators, however, there are only $2^4 = 16$ observable response profiles (15 degrees of freedom in the saturated multinomial table). Estimating complex multilevel mixture models with continuous random effects across this compact discrete space introduces severe empirical identification constraints. In our analytical design, we therefore use the single-level LCA strictly as an inductive, taxonomical tool to map population-averaged support configurations across dyads---substituting empirical clustering for arbitrary manual groupings. Crucially, we do not rely on the LCA for hypothesis testing or covariate evaluation; all confirmatory inference, standard errors, and predictor effects are reserved for the subsequent multilevel regression framework, where clustering within egos is explicitly modeled.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\textwidth]{Plots/fig1_lca_support_profiles.png}
+\caption{Conditional Item Response Probabilities Across Latent Social Support Classes}
+\label{fig:lca_profiles}
+\vspace{0.3em}
+\parbox{\textwidth}{\footnotesize \textbf{Note:} Latent class profiles estimated via \texttt{poLCA} across four binary social support indicators ($N = 22,739$ tie observations). Bars represent the conditional probability of endorsing each support exchange given membership in that latent class.}
+\end{figure}
+
+Figure~\ref{fig:lca_profiles} illustrates the conditional item response probabilities that define the four latent support classes. The first class, which we label ``Casual Companionship,'' encompasses 45.8\% of all analyzed ties. Ties in this class have a 1.00 probability of providing companionship (hanging out) but a 0.00 probability of providing financial assistance, accompanied by modest probabilities of providing advice (0.26) or comfort (0.16). This class reflects everyday collegiate socializing that lacks deep confiding or material exchange. The second class, designated ``Comprehensive Support,'' encompasses 41.5\% of ties and represents emotionally intimate relationships characterized by high probabilities of advice (0.99), comfort (0.97), and companionship (0.99), alongside a moderate likelihood of financial aid (0.21). The third class, labeled ``Instrumental Support'' (4.3\% of ties), displays a distinctive profile: it exhibits high probabilities of financial assistance (0.68), advice (0.88), and emotional comfort (0.83), but a low probability of companionship (0.29). Finally, the fourth class, labeled ``Peripheral Support'' (8.4\% of ties), exhibits depressed endorsement rates across all four domains, with companionship reaching only 0.36 and financial aid just 0.12.
+
+\begin{table}[htbp]
+\centering
+\caption{Distribution of Latent Support Classes by Social Role Relation and Emotional Closeness}
+\label{tab:lca_crosstabs}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccc@{}}
+\toprule
+Dimension \& Category & \shortstack{Casual\\Companionship} & \shortstack{Comprehensive\\Support} & \shortstack{Instrumental\\Support} & \shortstack{Peripheral\\Support} \\
+\midrule
+\multicolumn{5}{l}{\textbf{Panel A: Social Role Relation}} \\
+\hspace{1em}Friend & 53.8\% & 40.5\% & 1.0\% & 4.8\% \\
+\hspace{1em}Family & 15.3\% & 58.3\% & 17.8\% & 8.6\% \\
+\hspace{1em}Romantic Partner & 14.8\% & 81.7\% & 1.5\% & 1.9\% \\
+\hspace{1em}Acquaintance & 44.8\% & 5.4\% & 0.5\% & 49.3\% \\
+\hspace{1em}Other Role & 50.5\% & 13.8\% & 2.2\% & 33.5\% \\
+\midrule
+\multicolumn{5}{l}{\textbf{Panel B: Emotional Closeness}} \\
+\hspace{1em}Distant & 43.5\% & 16.5\% & 3.5\% & 36.5\% \\
+\hspace{1em}Less Close & 66.5\% & 5.0\% & 1.6\% & 26.9\% \\
+\hspace{1em}Close & 69.3\% & 19.3\% & 2.4\% & 9.0\% \\
+\hspace{1em}Especially Close & 29.0\% & 61.7\% & 6.2\% & 3.1\% \\
+\bottomrule
+\end{tabular*}
+\vspace{0.5em}
+\parbox{\textwidth}{\footnotesize \textbf{Note:} Cell entries represent row percentages displaying the proportion of ties within each role or closeness category assigned to the respective latent support class ($N = 22,739$).}
+\end{table}
+
+Table~\ref{tab:lca_crosstabs} presents the cross-classification of assigned latent support classes across social role relations (Panel A) and emotional closeness levels (Panel B). The empirical sorting reveals pronounced institutional and affective specialization. Among friends, ties are split predominantly between Casual Companionship (53.8\%) and Comprehensive Support (40.5\%), with virtually zero presence in Instrumental Support (1.0\%). By contrast, family ties are heavily concentrated in Comprehensive Support (58.3\%) and Instrumental Support (17.8\%), while Casual Companionship accounts for only 15.3\%. Romantic partners exhibit the highest concentration of Comprehensive Support (81.7\%), with minimal peripheral categorization (1.9\%). Acquaintances and other roles are primarily relegated to Peripheral Support (49.3\% and 33.5\%, respectively) and Casual Companionship.
+
+Examining Panel B of Table~\ref{tab:lca_crosstabs} shows that emotional closeness strongly stratifies support configurations. Ties classified as ``Especially Close'' are overwhelmingly located in Comprehensive Support (61.7\%), whereas ties categorized as ``Close'' or ``Less Close'' are predominantly confined to Casual Companionship (69.3\% and 66.5\%, respectively). Peripheral support is heavily concentrated among distant and less close ties, showing that emotional intimacy is an indispensable prerequisite for multi-domain support provision.
+
+\section{Multilevel Models: Predicting Latent Support Configurations}
+
+To test how tie strength indicators and role relations independently predict membership in each of the inductively identified support configurations while accounting for the nesting of multiple ties within respondents, we formulated multilevel generalized linear mixed models (GLMMs) with a logit link function. Rather than predicting disaggregated individual support items---which would render the latent class typologizing redundant---the dependent variables in this confirmatory stage are the four distinct relational regimes identified by the LCA: Comprehensive Support, Casual Companionship, Instrumental Support, and Peripheral Support.
+
+For each latent support category $k$ (Comprehensive Support, Casual Companionship, Instrumental Support, or Peripheral Support), the probability that a dyadic tie $i$ nested within ego $j$ is assigned to class $k$ is modeled as:
+\begin{equation}
+\text{logit}(P(Y_{ij} = k)) = \beta_{0k} + \mathbf{X}_{ij}\boldsymbol{\beta}_k + u_{jk}
+\end{equation}
+where $\mathbf{X}_{ij}$ represents the vector of tie-level strength indicators (affective closeness, contact frequency, cognitive salience, and duration), social role relations, and dyadic controls, $\boldsymbol{\beta}_k$ is the class-specific vector of fixed-effect coefficients, and $u_{jk} \sim \mathcal{N}(0, \sigma_{uk}^2)$ represents the ego-specific random intercept for class $k$. By capturing unobserved respondent-level variance---such as individual baseline sociability, reporting thresholds, or dispositional tendencies to perceive support---the inclusion of $u_{jk}$ prevents standard error deflation and accounts for dyadic clustering within personal networks. Latent intraclass correlation coefficients (ICCs) demonstrate substantial ego-level clustering across all four configurations, ranging from 0.248 for Casual Companionship ($\sigma_u^2 = 1.082$) to 0.307 for Comprehensive Support ($\sigma_u^2 = 1.457$), 0.356 for Instrumental Support ($\sigma_u^2 = 1.821$), and 0.380 for Peripheral Support ($\sigma_u^2 = 2.016$).
+
+From an estimation standpoint, specifying separate binary GLMMs for each latent configuration offers distinct methodological advantages over simultaneous multinomial mixed models \citep[such as \texttt{mclogit::mblogit};][]{lizardo2024theorizing}. In dyadic network data, certain cross-classifications between role relations and specialized support regimes contain extreme cell sparsity---most notably, acquaintances providing instrumental kin support ($n = 1$). Under frequentist Fisher scoring or Newton-Raphson algorithms in multinomial settings, these sparse cells induce quasi-complete separation, producing non-convergence warnings and unstable covariance matrices. The binary GLMM framework avoids these computational pathologies, preserves full categorical granularity across all role categories and duration intervals, and allows the respondent-level variance ($\sigma_{uk}^2$) to vary freely across distinct support regimes. Table~\ref{tab:glmm_results} presents the estimated odds ratios (ORs) and 95\% confidence intervals from these multilevel models across the four latent support configurations.
+
+\begin{table}[p]
+\centering
+\caption{Multilevel Mixed-Effects Logistic Regression Models Predicting Latent Social Support Configurations}
+\label{tab:glmm_results}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccc@{}}
+\toprule
+Predictor Variable & \shortstack{Comprehensive\\Support} & \shortstack{Casual\\Companionship} & \shortstack{Instrumental\\Support} & \shortstack{Peripheral\\Support} \\
+\midrule
+\multicolumn{5}{l}{\textit{Emotional Closeness (ref: Close)}} \\
+\hspace{1em}Especially Close & 7.09*** (6.46, 7.79) & 0.24*** (0.22, 0.26) & 0.84 (0.67, 1.07) & 0.20*** (0.17, 0.24) \\
+\hspace{1em}Less Close & 0.23*** (0.16, 0.32) & 0.72*** (0.60, 0.85) & 0.92 (0.52, 1.64) & 3.71*** (2.99, 4.59) \\
+\hspace{1em}Distant & 0.62 (0.27, 1.40) & 0.42** (0.23, 0.75) & 2.78 (0.69, 11.18) & 3.61*** (1.78, 7.32) \\
+\addlinespace
+\multicolumn{5}{l}{\textit{Contact Frequency (ref: Weekly)}} \\
+\hspace{1em}Daily & 1.22*** (1.12, 1.33) & 0.89** (0.82, 0.97) & 0.77** (0.64, 0.92) & 0.88 (0.75, 1.03) \\
+\hspace{1em}Monthly & 0.89 (0.78, 1.02) & 1.27*** (1.12, 1.44) & 0.62*** (0.47, 0.81) & 1.25* (1.01, 1.54) \\
+\hspace{1em}Less than Monthly & 0.74 (0.54, 1.01) & 1.38* (1.05, 1.81) & 0.66 (0.36, 1.19) & 1.26 (0.85, 1.85) \\
+\addlinespace
+\multicolumn{5}{l}{\textit{Cognitive Salience (ref: Middle 10)}} \\
+\hspace{1em}Top 5 & 1.36*** (1.25, 1.47) & 0.69*** (0.64, 0.75) & 1.43*** (1.20, 1.72) & 0.93 (0.80, 1.09) \\
+\hspace{1em}Bottom 5 & 0.80** (0.70, 0.92) & 1.18** (1.05, 1.34) & 1.34 (0.96, 1.89) & 0.84 (0.67, 1.04) \\
+\addlinespace
+\multicolumn{5}{l}{\textit{Relationship Duration (ref: 2--4 Years)}} \\
+\hspace{1em}5--10 Years & 2.10*** (1.83, 2.42) & 0.56*** (0.49, 0.64) & 1.30 (0.81, 2.07) & 0.49*** (0.36, 0.67) \\
+\hspace{1em}$>$ 10 Years & 2.37*** (1.96, 2.87) & 0.45*** (0.37, 0.54) & 1.81* (1.04, 3.13) & 0.72 (0.49, 1.07) \\
+\addlinespace
+\multicolumn{5}{l}{\textit{Social Role Relation (ref: Friend)}} \\
+\hspace{1em}Family & 0.54*** (0.45, 0.64) & 0.40*** (0.33, 0.48) & 12.98*** (8.29, 20.30) & 5.73*** (3.92, 8.36) \\
+\hspace{1em}Romantic Partner & 5.20*** (4.08, 6.63) & 0.21*** (0.16, 0.27) & 1.29 (0.65, 2.54) & 0.78 (0.39, 1.55) \\
+\hspace{1em}Acquaintance & 0.44* (0.22, 0.88) & 0.21*** (0.15, 0.30) & $<$ 0.01 (---) & 9.50*** (6.40, 14.09) \\
+\hspace{1em}Other Role & 0.35*** (0.23, 0.54) & 0.39*** (0.29, 0.52) & 2.23 (0.92, 5.43) & 12.03*** (8.22, 17.61) \\
+\addlinespace
+\multicolumn{5}{l}{\textit{Dyadic and Individual Context}} \\
+\hspace{1em}Same Dormitory & 1.09 (0.96, 1.23) & 0.98 (0.88, 1.09) & 0.50* (0.29, 0.86) & 0.78* (0.62, 0.97) \\
+\hspace{1em}Roommate & 1.17* (1.00, 1.37) & 0.90 (0.78, 1.04) & 1.09 (0.51, 2.35) & 1.17 (0.84, 1.62) \\
+\hspace{1em}Ego Gender: Men (vs.\ Women) & 0.25*** (0.20, 0.31) & 3.04*** (2.50, 3.68) & 1.52** (1.12, 2.04) & 1.76*** (1.30, 2.40) \\
+\midrule
+Random Intercept Variance ($\sigma_u^2$) & 1.457 & 1.082 & 1.821 & 2.016 \\
+Latent Intraclass Correlation (ICC) & 0.307 & 0.248 & 0.356 & 0.380 \\
+\bottomrule
+\end{tabular*}
+\vspace{0.5em}
+\parbox{\textwidth}{\footnotesize \textbf{Note:} Sample size $N = 22,737$ tie observations nested within $N = 581$ unique egos (ties with unknown duration omitted). Models include random ego intercepts (\texttt{(1 | egoid)}). Odds ratios (OR) are reported with 95\% confidence intervals in parentheses. Statistical significance: * $p < 0.05$, ** $p < 0.01$, *** $p < 0.001$.}
+\end{table}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.85\textwidth,height=0.45\textheight,keepaspectratio]{Plots/fig2_glmm_odds_ratios.png}
+\caption{Adjusted Odds Ratios from Multilevel Logistic GLMMs Predicting Latent Social Support Configurations}
+\label{fig:glmm_odds}
+\vspace{0.3em}
+\parbox{\textwidth}{\footnotesize \textbf{Note:} Forest plot of adjusted odds ratios and 95\% confidence intervals estimated from multilevel logistic regression models with random ego intercepts ($N = 22,737$ ties across $N = 581$ egos). The dashed vertical line indicates the null effect ($\text{OR} = 1.0$). The horizontal axis is plotted on a logarithmic scale.}
+\end{figure}
+
+Figure~\ref{fig:glmm_odds} visualizes the estimated odds ratios across the four latent social support configurations, allowing for direct comparison of how tie strength and role relations sort personal networks into distinct relational regimes. The parameter estimates demonstrate clear empirical patterns:
+
+First, emotional closeness and long-term history serve as the primary engines sorting ties into Comprehensive Support. Relative to ties evaluated as ``Close,'' alters characterized as ``Especially Close'' exhibit more than a sevenfold increase in the odds of providing comprehensive support ($\text{OR} = 7.09, 95\%\text{ CI } [6.46, 7.79]$), whereas ``Less Close'' ties show an 77\% reduction in odds ($\text{OR} = 0.23, p < 0.001$). Relationship duration demonstrates powerful cumulative returns: ties maintained for 5--10 years ($\text{OR} = 2.10, p < 0.001$) and more than 10 years ($\text{OR} = 2.37, p < 0.001$) are more than twice as likely to provide comprehensive backing compared to newer ties (2--4 years). Cognitive salience also enhances access ($\text{Top 5}: \text{OR} = 1.36, p < 0.001$), while daily activation yields a modest elevation ($\text{OR} = 1.22, p < 0.001$). Net of tie strength, romantic partners are more than five times as likely as friends to occupy the comprehensive support regime ($\text{OR} = 5.20, 95\%\text{ CI } [4.08, 6.63]$).
+
+Second, Casual Companionship is overwhelmingly structured by peer friendships and moderate affective intimacy. Relative to friends, family members ($\text{OR} = 0.40, p < 0.001$), romantic partners ($\text{OR} = 0.21, p < 0.001$), and acquaintances ($\text{OR} = 0.21, p < 0.001$) are all substantially less likely to provide exclusively casual companionship. Interestingly, ties evaluated as ``Especially Close'' show sharply lower odds of remaining in this class ($\text{OR} = 0.24, p < 0.001$), because extreme affective closeness shifts ties into Comprehensive Support. Similarly, alters nominated in the Top 5 salience tier are less likely to be casual companions ($\text{OR} = 0.69, p < 0.001$), confirming that cognitive retrieval prioritizes substantive confidants over recreational peers.
+
+Third, Instrumental Support is governed by kinship obligations rather than campus proximity or daily interaction. Family ties exhibit a staggering thirteen-fold elevation in the odds of providing instrumental support relative to friends ($\text{OR} = 12.98, 95\%\text{ CI } [8.29, 20.30]$). By contrast, acquaintances virtually never provide instrumental backing ($\text{OR} < 0.01$). Daily contact frequency is negatively associated with instrumental support ($\text{OR} = 0.77, p = 0.005$), reflecting the spatial dispersion of collegiate students from the parental households that provide financial and material backing. Long-standing duration ($>$ 10 years: $\text{OR} = 1.81, p = 0.035$) and Top 5 cognitive salience ($\text{OR} = 1.43, p < 0.001$) further underscore that instrumental ties represent core familial anchors.
+
+Fourth, Peripheral Support captures relational ties characterized by weak sentiments, formal roles, and minimal resource transmission. Ties evaluated as ``Less Close'' ($\text{OR} = 3.71, p < 0.001$) and ``Distant'' ($\text{OR} = 3.61, p < 0.001$) show nearly fourfold increases in the odds of being peripheral relative to ``Close'' ties, while ``Especially Close'' ties are rarely peripheral ($\text{OR} = 0.20, p < 0.001$). Role relations exhibit sharp sorting: acquaintances ($\text{OR} = 9.50, p < 0.001$) and other non-intimate roles ($\text{OR} = 12.03, p < 0.001$) are heavily concentrated in the peripheral tier. Long-term relational duration acts as a protective buffer against marginalization (5--10 years: $\text{OR} = 0.49, p < 0.001$).
+
+Finally, respondent gender identity and organizational context reveal pronounced structural differences. Men report substantially lower odds of maintaining ties in Comprehensive Support ($\text{OR} = 0.25, p < 0.001$), but more than a threefold increase in the odds of Casual Companionship ties ($\text{OR} = 3.04, p < 0.001$), illustrating a stark gendered division where men's personal communities are disproportionately weighted toward activity-based socializing rather than multiplex expressive confiding. Roommates show modestly higher odds of Comprehensive Support ($\text{OR} = 1.17, p = 0.046$), whereas shared dormitory residence reduces the likelihood of ties falling into Instrumental Support ($\text{OR} = 0.50, p = 0.012$) or Peripheral Support ($\text{OR} = 0.78, p = 0.026$).
+
+\section{Discussion and Conclusion}
+
+This study set out to investigate the empirical links between tie strength, social role relations, and social support exchanges across personal networks, moving beyond the conceptual confounding that has long characterized research on social capital. Building on \citet{lizardo2024theorizing} frame-analytic model and \citet{marsden1984measuring} measurement framework, our analytical strategy decoupled role categories, affective sentiments, interaction frequencies, and functional support provisions. By combining Latent Class Analysis with Multilevel Generalized Linear Mixed Models, we eliminated the need for arbitrary heuristic groupings of support exchanges, properly accounted for the clustering of multiple dyadic ties within respondents, and directly predicted membership in inductively identified relational regimes.
+
+Substantively, the empirical results provide strong support for \citet{marsden1984measuring} foundational argument that tie strength is fundamentally multidimensional and cannot be reduced to a single linear index or equated with role labels. Emotional closeness, interaction frequency, cognitive salience, and duration each exhibit distinct predictive profiles across support domains. Emotional closeness functions as the indispensable foundation for comprehensive support, whereas interaction frequency predominantly regulates companionship and everyday sociability. Cognitive salience in the name-generation process captures psychological prominence that enhances access to substantive assistance beyond reported closeness and frequency.
+
+Furthermore, our findings illuminate the specialized functional division of labor embedded within personal networks. Rather than observing an undifferentiated continuum from ``weak'' to ``strong'' ties, the Latent Class Analysis shows that ties organize into discrete relational regimes: casual companionship ties that provide sociability without confiding or material exchange; comprehensive support ties that bundle intimacy, advice, and companionship; instrumental ties that provide vital material and informational backing despite low everyday interaction frequency; and peripheral ties that provide minimal assistance. Role relations establish normative boundaries around specific resources: financial assistance and instrumental backing remain overwhelmingly anchored in family relationships, whereas companionship is almost exclusively negotiated through peer friendships.
+
+These findings have direct implications for contemporary theories of social capital. Access to diverse forms of social capital depends not merely on the aggregate volume of ties or the presence of bridging weak ties, but on maintaining a functionally balanced portfolio of personal relationships. While campus friendships provide essential everyday companionship and peer guidance, they rarely substitute for the material and long-term security provided by family ties. Future research should leverage these multilevel insights to examine within-tie panel trajectories, investigating how the formation, activation, and dissolution of specific support exchanges track personal transitions across the early adult life course.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
