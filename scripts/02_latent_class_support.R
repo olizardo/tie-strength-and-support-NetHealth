@@ -84,10 +84,10 @@ opt_model <- lca_models[[paste0("K_", best_k)]]
 probs_list <- list()
 items <- c("hang", "adv", "comf", "fin")
 item_labels <- c(
-  "hang" = "Companionship (Hang Out)",
-  "adv"  = "Advice / Information",
-  "comf" = "Comfort / Emotional",
-  "fin"  = "Financial Assistance"
+  "hang" = "Companionship",
+  "adv"  = "Advice",
+  "comf" = "Comfort",
+  "fin"  = "Financial"
 )
 
 for (item in items) {
@@ -111,8 +111,8 @@ class_summary <- probs_df %>%
     class_label = case_when(
       hang > 0.8 & adv > 0.8 & comf > 0.8 ~ "Comprehensive Support",
       hang > 0.8 & adv < 0.6 & comf < 0.5 ~ "Casual Companionship",
-      fin > 0.4 & hang < 0.5 ~ "Instrumental / Kin Support",
-      TRUE ~ "Low / Peripheral Support"
+      fin > 0.4 & hang < 0.5 ~ "Instrumental Support",
+      TRUE ~ "Peripheral Support"
     )
   )
 
@@ -170,7 +170,7 @@ df_augmented <- df %>%
   mutate(
     lca_class_num = opt_model$predclass,
     lca_class = factor(unname(class_labels_vec[as.character(lca_class_num)]),
-      levels = c("Casual Companionship", "Comprehensive Support", "Instrumental / Kin Support", "Low / Peripheral Support")
+      levels = c("Casual Companionship", "Comprehensive Support", "Instrumental Support", "Peripheral Support")
     ),
     lca_post_prob = apply(opt_model$posterior, 1, max)
   )

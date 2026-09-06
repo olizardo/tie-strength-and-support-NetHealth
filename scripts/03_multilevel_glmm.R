@@ -28,10 +28,10 @@ cat("Analytical sample size for GLMMs:", nrow(df), "ties across", n_distinct(df$
 
 # Formula specification for GLMM
 outcomes <- c(
-  "supp_hang" = "Companionship (Hang Out)",
-  "supp_adv"  = "Advice / Information",
-  "supp_comf" = "Comfort / Emotional",
-  "supp_fin"  = "Financial Assistance",
+  "supp_hang" = "Companionship",
+  "supp_adv"  = "Advice",
+  "supp_comf" = "Comfort",
+  "supp_fin"  = "Financial",
   "supp_comprehensive" = "Comprehensive Latent Support"
 )
 
@@ -139,7 +139,7 @@ plot_df <- all_tidy %>%
     term_clean = factor(term_clean, levels = rev(core_terms)),
     outcome_label = factor(
       outcome_label,
-      levels = c("Companionship (Hang Out)", "Advice / Information", "Comfort / Emotional", "Financial Assistance")
+      levels = c("Companionship", "Advice", "Comfort", "Financial")
     )
   )
 
