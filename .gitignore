@@ -15,6 +15,13 @@ data/*.csv
 data/*.rds
 !data/.gitkeep
 
+# LaTeX auxiliary artifacts
+*.aux
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+
 # Drive sync intermediate files
 draft_*.docx
 draft_*.txt
