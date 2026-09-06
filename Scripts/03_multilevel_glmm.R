@@ -131,10 +131,13 @@ core_terms <- c(
 )
 
 plot_df <- all_tidy %>%
-  filter(
-    term_clean %in% core_terms
-  ) %>%
+  filter(term_clean %in% core_terms) %>%
+  # Filter degenerate points with extreme separation standard errors
   mutate(
+    is_degenerate = std_error > 10,
+    estimate_plot = ifelse(is_degenerate, NA, estimate),
+    conf_low_plot = ifelse(is_degenerate, NA, pmax(conf_low, 0.08)),
+    conf_high_plot = ifelse(is_degenerate, NA, pmin(conf_high, 20)),
     term_clean = factor(term_clean, levels = rev(core_terms)),
     outcome_label = factor(
       outcome_label,
@@ -142,15 +145,20 @@ plot_df <- all_tidy %>%
     )
   )
 
-p_forest <- ggplot(plot_df, aes(x = estimate, y = term_clean, color = outcome_label)) +
+p_forest <- ggplot(plot_df, aes(x = estimate_plot, y = term_clean, color = outcome_label)) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
   geom_pointrange(
-    aes(xmin = conf_low, xmax = conf_high),
+    aes(xmin = conf_low_plot, xmax = conf_high_plot),
     position = position_dodge(width = 0.65),
-    linewidth = 0.5,
-    size = 0.4
+    linewidth = 0.6,
+    size = 0.5,
+    na.rm = TRUE
   ) +
-  scale_x_log10(breaks = c(0.1, 0.2, 0.5, 1, 2, 5, 10, 20)) +
+  scale_x_log10(
+    limits = c(0.1, 20),
+    breaks = c(0.1, 0.2, 0.5, 1, 2, 5, 10, 20),
+    labels = c("0.1", "0.2", "0.5", "1.0", "2.0", "5.0", "10", "20")
+  ) +
   scale_color_brewer(palette = "Set2") +
   labs(
     title = "Predictors of Latent Social Support Configurations Across Ego Networks",
@@ -159,12 +167,12 @@ p_forest <- ggplot(plot_df, aes(x = estimate, y = term_clean, color = outcome_la
     y = NULL,
     color = "Latent Support Class"
   ) +
-  guides(color = guide_legend(nrow = 2, byrow = TRUE)) +
+  guides(color = guide_legend(nrow = 1, byrow = TRUE)) +
   theme_minimal(base_size = 11) +
   theme(
     legend.position = "bottom",
     panel.grid.minor = element_blank(),
-    axis.text.y = element_text(face = "bold", color = "black"),
+    axis.text.y = element_text(face = "bold", color = "black", size = 9.5),
     axis.text.x = element_text(color = "black")
   )
 

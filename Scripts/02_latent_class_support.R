@@ -121,12 +121,16 @@ print(class_summary)
 
 # Merge class labels back to probabilities
 probs_df <- probs_df %>%
-  left_join(class_summary %>% dplyr::select(class_num, class_label), by = "class_num")
+  left_join(class_summary %>% dplyr::select(class_num, class_label), by = "class_num") %>%
+  mutate(
+    class_label = factor(class_label, levels = rev(c("Comprehensive Support", "Casual Companionship", "Instrumental Support", "Peripheral Support"))),
+    item_label = factor(item_label, levels = c("Companionship", "Advice", "Comfort", "Financial"))
+  )
 
-# Plot Conditional Item Response Probabilities (flipped coordinates)
+# Plot Conditional Item Response Probabilities grouped by latent class, colored by item
 p_lca_profiles <- ggplot(
   probs_df,
-  aes(x = item_label, y = probability, fill = class_label, group = class_label)
+  aes(x = class_label, y = probability, fill = item_label, group = item_label)
 ) +
   geom_col(position = position_dodge(width = 0.8), width = 0.7, color = "black", alpha = 0.85) +
   geom_text(
@@ -144,15 +148,15 @@ p_lca_profiles <- ggplot(
   scale_fill_brewer(palette = "Set2") +
   labs(
     title = "Latent Classes of Social Support Exchanges",
-    subtitle = "Item response probabilities from 4-class LCA model (N = 22,739 ties)",
-    x = "Support Type",
+    subtitle = "Item response probabilities grouped by latent class (N = 22,739 ties)",
+    x = "Latent Support Class",
     y = "Conditional Response Probability",
-    fill = "Latent Support Class"
+    fill = "Support Type"
   ) +
-  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+  guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
   theme_minimal(base_size = 11) +
   theme(
-    axis.text.y = element_text(face = "bold", color = "black"),
+    axis.text.y = element_text(face = "bold", color = "black", size = 10),
     axis.text.x = element_text(color = "black"),
     legend.position = "bottom",
     legend.title = element_text(face = "bold", size = 10),
