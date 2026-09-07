@@ -116,87 +116,110 @@ write_csv(all_tidy, "output/tables/glmm_results_odds_ratios.csv")
 saveRDS(models, "data/glmm_fitted_models.rds")
 cat("==> Saved output/tables/glmm_results_odds_ratios.csv and data/glmm_fitted_models.rds\n")
 
-# Forest Plot of Key Predictors across Latent Support Classes
-all_predictors <- c(
-  "Closeness: Especially Close (vs. Close)",
-  "Closeness: Less Close (vs. Close)",
-  "Closeness: Distant (vs. Close)",
-  "Frequency: Daily (vs. Weekly)",
-  "Frequency: Monthly (vs. Weekly)",
-  "Frequency: Less than Monthly (vs. Weekly)",
-  "Salience: Top 5 (vs. Middle 10)",
-  "Salience: Bottom 5 (vs. Middle 10)",
-  "Duration: > 10 Years (vs. 2-4 Years)",
-  "Duration: 5-10 Years (vs. 2-4 Years)",
-  "Duration: < 2 Years (vs. 2-4 Years)",
-  "Role: Family (vs. Friend)",
-  "Role: Romantic Partner (vs. Friend)",
-  "Role: Acquaintance (vs. Friend)",
-  "Role: Other (vs. Friend)",
-  "Context: Same Dormitory",
-  "Context: Roommate",
-  "Ego Gender: Men (vs. Women)"
-)
-
-plot_df <- all_tidy %>%
-  filter(term_clean %in% all_predictors) %>%
-  # Filter degenerate points with extreme separation standard errors
+# Clean, concise predictor labels for publication
+all_tidy <- all_tidy %>%
   mutate(
-    is_degenerate = std_error > 10,
-    estimate_plot = ifelse(is_degenerate, NA, estimate),
-    conf_low_plot = ifelse(is_degenerate, NA, pmax(conf_low, 0.08)),
-    conf_high_plot = ifelse(is_degenerate, NA, pmin(conf_high, 20)),
-    term_clean = factor(term_clean, levels = rev(all_predictors)),
-    outcome_label = factor(
-      outcome_label,
-      levels = c("Comprehensive Support", "Casual Companionship", "Instrumental Support", "Peripheral Support")
+    term_short = case_when(
+      term == "close_catEspecially Close" ~ "Especially Close",
+      term == "close_catLess Close"       ~ "Less Close",
+      term == "close_catDistant"          ~ "Distant",
+      term == "freq_catDaily"             ~ "Daily Contact",
+      term == "freq_catMonthly"           ~ "Monthly Contact",
+      term == "freq_catLess than Monthly" ~ "Contact < Monthly",
+      term == "pos_catTop 5"              ~ "Top 5 Salience",
+      term == "pos_catBottom 5"           ~ "Bottom 5 Salience",
+      term == "duration_cat> 10 Years"    ~ "Duration > 10 Yrs",
+      term == "duration_cat5-10 Years"    ~ "Duration 5–10 Yrs",
+      term == "duration_cat< 2 Years"     ~ "Duration < 2 Yrs",
+      term == "role_catRomantic Partner"  ~ "Romantic Partner",
+      term == "role_catFamily"            ~ "Family",
+      term == "role_catAcquaintance"      ~ "Acquaintance",
+      term == "role_catOther"             ~ "Other Role",
+      term == "same_dormTRUE"             ~ "Same Dormitory",
+      term == "roommateTRUE"              ~ "Roommate",
+      term == "ego_genderMen"             ~ "Ego: Men",
+      TRUE ~ NA_character_
     )
   )
 
-p_forest <- ggplot(plot_df, aes(x = estimate_plot, y = term_clean, color = outcome_label)) +
-  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
+# Filter degenerate points with extreme separation (n=1 acquaintance in instrumental)
+plot_df <- all_tidy %>%
+  filter(!is.na(term_short) & std_error <= 10) %>%
+  mutate(
+    outcome_label = factor(
+      outcome_label,
+      levels = c("Comprehensive Support", "Casual Companionship", "Instrumental Support", "Peripheral Support")
+    ),
+    is_sig = (conf_low > 1 | conf_high < 1),
+    effect_status = case_when(
+      !is_sig ~ "Null (95% CI spans 1.0)",
+      estimate > 1 ~ "Positive (OR > 1.0)",
+      TRUE ~ "Negative (OR < 1.0)"
+    ),
+    effect_status = factor(effect_status, levels = c("Positive (OR > 1.0)", "Null (95% CI spans 1.0)", "Negative (OR < 1.0)")),
+    conf_low_bounded = pmax(conf_low, 0.08),
+    conf_high_bounded = pmin(conf_high, 20),
+    panel_term = paste(outcome_label, term_short, sep = "___")
+  ) %>%
+  arrange(outcome_label, estimate)
+
+# Order factor levels strictly by estimate within each panel
+plot_df$panel_term <- factor(plot_df$panel_term, levels = plot_df$panel_term)
+
+p_forest <- ggplot(plot_df, aes(x = estimate, y = panel_term, color = effect_status)) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray50", linewidth = 0.5) +
   geom_pointrange(
-    aes(xmin = conf_low_plot, xmax = conf_high_plot),
-    position = position_dodge(width = 0.65),
+    aes(xmin = conf_low_bounded, xmax = conf_high_bounded),
     linewidth = 0.55,
-    size = 0.4,
-    na.rm = TRUE
+    size = 0.38
   ) +
+  scale_y_discrete(labels = function(x) gsub(".*___", "", x)) +
   scale_x_log10(
-    limits = c(0.1, 20),
+    limits = c(0.08, 22),
     breaks = c(0.1, 0.2, 0.5, 1, 2, 5, 10, 20),
     labels = c("0.1", "0.2", "0.5", "1.0", "2.0", "5.0", "10", "20")
   ) +
-  scale_color_brewer(palette = "Set2") +
+  scale_color_manual(
+    values = c(
+      "Positive (OR > 1.0)" = "#0072B2",
+      "Null (95% CI spans 1.0)" = "gray65",
+      "Negative (OR < 1.0)" = "#D55E00"
+    ),
+    name = "Statistical Significance (95% CI)"
+  ) +
+  facet_wrap(~ outcome_label, scales = "free_y", ncol = 2) +
   labs(
     title = "Predictors of Latent Social Support Configurations",
-    subtitle = "Multilevel Logistic GLMM Odds Ratios with 95% Confidence Intervals (N = 22,737 ties)",
+    subtitle = "Multilevel Logistic GLMM Odds Ratios Sorted by Direction and Effect Size (N = 22,737 ties)",
     x = "Adjusted Odds Ratio (log scale)",
-    y = NULL,
-    color = "Latent Support Class"
+    y = NULL
   ) +
   guides(color = guide_legend(
-    nrow = 2,
-    byrow = TRUE,
-    title.position = "top",
-    title.hjust = 0.5
+    nrow = 1, 
+    byrow = TRUE, 
+    title.position = "top", 
+    title.hjust = 0.5,
+    override.aes = list(size = 0.5)
   )) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title.position = "plot",
     plot.title = element_text(face = "bold", size = 11.5, color = "black"),
-    plot.subtitle = element_text(size = 9.5, color = "gray30", margin = margin(b = 8)),
+    plot.subtitle = element_text(size = 9, color = "gray30", margin = margin(b = 6)),
+    strip.text = element_text(face = "bold", size = 9.5, color = "black"),
+    strip.background = element_rect(fill = "#e9ecef", color = NA),
     legend.position = "bottom",
     legend.box = "vertical",
     legend.box.just = "center",
-    legend.title = element_text(face = "bold", size = 9.5),
+    legend.title = element_text(face = "bold", size = 9),
     legend.text = element_text(size = 8.5),
-    legend.margin = margin(t = 2, b = 2),
+    legend.margin = margin(t = 3, b = 2),
     panel.grid.minor = element_blank(),
-    axis.text.y = element_text(face = "bold", color = "black", size = 8.5),
-    axis.text.x = element_text(color = "black", size = 9)
+    axis.text.y = element_text(color = "black", size = 8.0, face = "bold"),
+    axis.text.x = element_text(color = "black", size = 8.5),
+    panel.spacing = unit(1.0, "lines")
   )
 
-ggsave("output/figures/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 6.5, dpi = 300)
-ggsave("Plots/fig2_glmm_odds_ratios.png", p_forest, width = 6.5, height = 6.5, dpi = 300)
+ggsave("output/figures/fig2_glmm_odds_ratios.png", p_forest, width = 6.8, height = 7.4, dpi = 300)
+ggsave("Plots/fig2_glmm_odds_ratios.png", p_forest, width = 6.8, height = 7.4, dpi = 300)
 cat("==> Saved output/figures/fig2_glmm_odds_ratios.png and Plots/fig2_glmm_odds_ratios.png\n")

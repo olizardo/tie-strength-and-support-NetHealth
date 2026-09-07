@@ -171,6 +171,7 @@ Pervasive conceptual and empirical conflations have hindered network research:
 ::: {.column width="50%"}
 ### 2. Conflating Contact & Intimacy
 - Daily contact is often driven by shared organizational foci (dormitories, workplaces) rather than mutual confiding (Feld 1982).
+
 ### 3. Assuming Generalized Support
 - Assuming that “strong ties” universally provide all forms of assistance, whereas “weak ties” serve only as informational bridges.
 :::
@@ -345,13 +346,13 @@ Empirically examine how these distinct frames independently sort dyadic ties int
 ### The 4 Support Items
 Respondents indicated whether each named alter provided four distinct forms of assistance:
 
-1. **Companionship** (`supphang`):
+1. **Companionship**:
    - *Hanging out when feeling like company*
-2. **Advice** (`suppadv`):
+2. **Advice**:
    - *Advice when dealing with a life problem*
-3. **Comfort** (`suppcomf`):
+3. **Comfort**:
    - *Comforting when something bad happened*
-4. **Financial** (`suppfin`):
+4. **Financial Assistance**:
    - *Gone to when in financial need*
 :::
 :::
