@@ -33,6 +33,67 @@
 - Avoid using `size` in `ggplot2` for line layers (`geom_line`, `geom_segment`, `geom_errorbar`); always use the modernized `linewidth` aesthetic to prevent deprecation warnings from cluttering the render logs.
 - When applying robust standard errors to multi-state categorical models (like `nnet::multinom`), `lmtest::coeftest` struggles to return the structure. Manually extract the `vcovCL` diagonals and calculate the Z-scores and P-values via matrix arithmetic to ensure stable dataframe conversion.
 
+### Reveal.js Presentation Standards: Viewport & Screen-Fit Optimizations (Horizontal & Vertical)
+When constructing academic presentation slide decks using Quarto Reveal.js (`format: revealjs`), slides must be designed to fit cleanly on standard widescreen displays (16:9 aspect ratio) without horizontal overflow, vertical truncation, or accidental scrollbars:
+
+1. **Standard 16:9 Canvas Dimensions & Margin Budgeting**:
+   - Explicitly configure standard widescreen 16:9 canvas dimensions in the YAML header: `width: 1280` and `height: 720` with tight margins (`margin: 0.06` or `margin: 0.08`). Avoid narrow 4:3 ratios (`1050x700`) or non-standard aspect ratios that cause horizontal letterboxing or clipping on laptop and projector screens.
+   - **Zero-Scroll Vertical Geometry**: Strictly avoid `scrollable: true` unless explicitly requested. Slides in professional academic presentations must fit entirely within the 720px vertical viewport. A slide that requires vertical scrolling during a live presentation indicates poor density management.
+
+2. **Typography Sizing & Vertical Spacing Budget**:
+   - Embed a compact base typography style block:
+     ```css
+     .reveal { font-size: 25px; }
+     .reveal h1 { font-size: 1.75em; font-weight: bold; }
+     .reveal h2 { font-size: 1.30em; font-weight: bold; margin-top: 0.1em; margin-bottom: 0.4em; }
+     .reveal h3 { font-size: 1.05em; font-weight: bold; margin-top: 0.2em; margin-bottom: 0.3em; }
+     .reveal p, .reveal li { line-height: 1.35; margin-bottom: 0.25em; }
+     .reveal ul, .reveal ol { margin-top: 0.2em; margin-bottom: 0.4em; }
+     ```
+   - Limit bullet lists to at most 5–7 concise items per slide, or split content across balanced two-column layouts (`::: {.columns}` with `width="50%"` or `width="60%"` / `width="40%"`).
+
+3. **Constrained Figure Containers (`max-height: 520px`)**:
+   - In a 720px viewport, slide headings (`h2`) take ~50–60px, margins take ~40–50px, leaving approximately **520–550px** of vertical space for visual assets.
+   - Always wrap full-slide plots in a centered flex container that constrains maximum height:
+     ```css
+     .fig-container {
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       height: 530px;
+     }
+     .fig-container img {
+       max-height: 520px;
+       max-width: 100%;
+       object-fit: contain;
+     }
+     ```
+   - Never allow unconstrained raw images (`![](Plots/figure.png)`) to render at native resolution, as large images (e.g. 1950x1950px) will push captions off-screen or trigger browser scrollbars.
+
+4. **Table Sizing & Cell Padding Rules**:
+   - Style tables compactly so multi-row tables fit vertically without truncation:
+     ```css
+     .reveal table { font-size: 0.72em; margin: auto; border-collapse: collapse; }
+     .reveal table th { background-color: #f1f3f5; padding: 5px 10px; border-bottom: 2px solid #333; }
+     .reveal table td { padding: 4px 10px; border-bottom: 1px solid #ddd; }
+     ```
+   - Tables with more than 8–10 rows must be split into panels across separate slides or presented in compact side-by-side columns.
+
+5. **Callout Block Geometry**:
+   - Compact callout block padding and margins to prevent vertical overflow:
+     ```css
+     .reveal .callout {
+       margin-top: 0.3em;
+       margin-bottom: 0.3em;
+       padding: 0.35em 0.75em;
+       font-size: 0.88em;
+       border-radius: 6px;
+     }
+     ```
+
+6. **Self-Contained Standalone Assets (`embed-resources: true`)**:
+   - Always set `embed-resources: true` in revealjs YAML headers so that images, MathJax math fonts, and presentation JavaScript are completely bundled into a single standalone `.html` file. Never depend on external CDN image links (e.g., Wikimedia) that can fail or trigger 400/403 errors during compilation.
+
 ## Supercomputing & HPC Integration (UCLA Hoffman2)
 The local machine is fully configured to deploy computationally intensive R jobs (e.g., Bayesian mixture models, large simulations) to the **UCLA Hoffman2 Cluster**.
 
