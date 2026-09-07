@@ -14,30 +14,99 @@ format:
     preview-links: auto
     embed-resources: true
     transition: slide
-    scrollable: true
-    margin: 0.08
-    width: 1100
+    width: 1280
     height: 720
+    margin: 0.06
+    center: false
 ---
+
+```{=html}
+<style>
+.reveal {
+  font-size: 25px;
+}
+.reveal h1 {
+  font-size: 1.75em;
+  font-weight: bold;
+}
+.reveal h2 {
+  font-size: 1.30em;
+  font-weight: bold;
+  margin-top: 0.1em;
+  margin-bottom: 0.4em;
+}
+.reveal h3 {
+  font-size: 1.05em;
+  font-weight: bold;
+  margin-top: 0.2em;
+  margin-bottom: 0.3em;
+}
+.reveal p, .reveal li {
+  line-height: 1.35;
+  margin-bottom: 0.25em;
+}
+.reveal ul, .reveal ol {
+  margin-top: 0.2em;
+  margin-bottom: 0.4em;
+}
+.reveal table {
+  font-size: 0.72em;
+  margin: auto;
+  border-collapse: collapse;
+}
+.reveal table th {
+  background-color: #f1f3f5;
+  padding: 5px 10px;
+  border-bottom: 2px solid #333;
+}
+.reveal table td {
+  padding: 4px 10px;
+  border-bottom: 1px solid #ddd;
+}
+.reveal .callout {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+  padding: 0.35em 0.75em;
+  font-size: 0.88em;
+  border-radius: 6px;
+}
+.reveal .callout .callout-title {
+  font-weight: bold;
+  margin-bottom: 0.2em;
+}
+.fig-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 530px;
+}
+.fig-container img {
+  max-height: 520px;
+  max-width: 100%;
+  object-fit: contain;
+}
+</style>
+```
 
 # Introduction & Theoretical Foundations {data-background-color="#1e3d59"}
 
 ## Properties of Social Ties
 
 ::: {.columns}
-::: {.column width="60%"}
-- **Dyadic ties** (edges, links) serve as the fundamental building blocks of social networks.
-- Most social network theory focuses on **network-level properties**:
-  - Density, modularity, centrality, clustering, small-world properties.
-- But ties themselves possess crucial **internal relational properties**:
+::: {.column width="62%"}
+- **Dyadic ties** (edges, links) are the elemental building blocks of networks.
+- Most network research prioritizes **network-level topology**:
+  - Density, modularity, centrality, clustering, small-world architecture.
+- Yet ties themselves possess vital **internal relational properties**:
   - Strength, multiplexity, duration, role content, valence, and resource flows.
-- **The Core Puzzle**: How do personal communities coordinate and activate specialized forms of functional social support?
+- **The Core Problem**: 
+  - How do interpersonal ties organize and activate specialized forms of functional social support within personal communities?
 :::
 
-::: {.column width="40%"}
+::: {.column width="38%"}
 ::: {.callout-note}
 ### Network vs. Dyadic Level
-Moving beyond network topology requires examining the **micro-architecture of dyadic bonds** where interpersonal support actually transpires.
+Moving beyond overall structural topology requires examining the **micro-architecture of dyadic bonds** where interpersonal support actually transpires.
 :::
 :::
 :::
@@ -48,12 +117,12 @@ Moving beyond network topology requires examining the **micro-architecture of dy
 
 How many distinct types of social ties exist?
 
-Following the influential taxonomy of **Borgatti et al. (2009)**, interpersonal ties fall into four broad families:
+Following the influential taxonomy of **Borgatti et al. (2009)**, interpersonal ties fall into two broad structural modes:
 
 ::: {.columns}
 ::: {.column width="50%"}
 ### 1. Continuous States
-- **Similarities**: Shared locations, common group memberships, demographic homophily.
+- **Similarities**: Shared physical locations, group co-memberships, demographic homophily.
 - **Role Relations**: Kinship, friendship, romantic partnerships, coworker or acquaintance ties.
 - **Sentiments**: Affective closeness, liking, trust, psychological intimacy.
 :::
@@ -61,29 +130,30 @@ Following the influential taxonomy of **Borgatti et al. (2009)**, interpersonal 
 ::: {.column width="50%"}
 ### 2. Discrete Events
 - **Interactions**: Behavioral contact, communication frequency, talk, shared activities.
-- **Flows & Exchanges**: Information transmission, social support, financial aid, advice.
+- **Flows & Exchanges**: Information transmission, social support, financial aid, personal advice.
 :::
 :::
 
-::: {.fragment}
-> **The Key Question**: What is the empirical and structural relationship among these distinct relational dimensions?
+::: {.callout-tip}
+### The Fundamental Question
+What is the structural and empirical relationship among these distinct relational dimensions?
 :::
 
 ---
 
 ## Tie Properties: The Concept of "Tie Strength"
 
-In his foundational formulation, **Granovetter (1973: 1361)** defined tie strength as:
+In his seminal formulation, **Granovetter (1973: 1361)** defined tie strength as:
 
 $$\text{Tie Strength} = f(\text{Time}, \text{Emotional Intensity}, \text{Intimacy}, \text{Reciprocal Services})$$
 
-- Tie strength was explicitly conceptualized as a **multidimensional bundle**:
-  - Amount of time spent together (frequency/duration)
+- Tie strength was conceptualized as a **multidimensional bundle**:
+  - Amount of time spent together (frequency and duration)
   - Emotional intensity
   - Intimacy (mutual confiding)
   - Reciprocal services (social support provision)
-- **The Classical Dilemma**: 
-  - Subsequent scholarship collapsed these distinct domains into a **single linear continuum** ranging from “weak” to “strong.”
+- **The Classical Conflation**: 
+  - Subsequent scholarship routinely collapsed these distinct domains into a **single linear continuum** from “weak” to “strong.”
 
 ---
 
@@ -91,42 +161,47 @@ $$\text{Tie Strength} = f(\text{Time}, \text{Emotional Intensity}, \text{Intimac
 
 Pervasive conceptual and empirical conflations have hindered network research:
 
-::: {.incremental}
-1. **Conflating Roles with Tie Strength**:
-   - Assuming that family and friends are “strong ties” by definition, while neighbors, acquaintances, and colleagues are inherently “weak ties” (Lin 2001; Wellman and Wortley 1990).
-   - Obscures vital variation: emotionally distant relatives vs. deeply close casual associates.
-2. **Conflating Interaction Frequency with Emotional Intimacy**:
-   - Daily contact is often driven by shared organizational foci (dormitories, workplaces) rather than mutual confiding (Feld 1982).
-3. **Assuming Generalized Resource Provision**:
-   - Assuming that “strong ties” universally provide all forms of assistance, whereas “weak ties” serve only as informational bridges.
+::: {.columns}
+::: {.column width="50%"}
+### 1. Conflating Roles & Strength
+- Assuming that family and friends are “strong ties” by definition, while coworkers and acquaintances are inherently “weak ties” (Lin 2001; Wellman and Wortley 1990).
+- Obscures vital variation: emotionally distant kin vs. intensely close casual associates.
+:::
+
+::: {.column width="50%"}
+### 2. Conflating Contact & Intimacy
+- Daily contact is often driven by shared organizational foci (dormitories, workplaces) rather than mutual confiding (Feld 1982).
+### 3. Assuming Generalized Support
+- Assuming that “strong ties” universally provide all forms of assistance, whereas “weak ties” serve only as informational bridges.
+:::
 :::
 
 ---
 
 ## Marsden and Campbell’s (1984) Foundational Model
 
-**Marsden and Campbell (1984)** introduced a vital methodological clarification:
+**Marsden and Campbell (1984)** introduced a crucial methodological clarification:
 
 ::: {.columns}
 ::: {.column width="50%"}
-### Indicators of Strength
-- Internal properties constituting the bond:
+### Indicators of Tie Strength
+- *Internal properties constituting the bond itself*:
   - **Emotional closeness** (primary, most valid indicator)
-  - **Contact frequency** (heavily contaminated by institutional foci)
-  - **Duration** (temporal investment)
+  - **Contact frequency** (contaminated by institutional foci)
+  - **Duration** (temporal relational investment)
 :::
 
 ::: {.column width="50%"}
-### Predictors of Strength
-- Structural and relational contexts:
+### Predictors of Tie Strength
+- *Structural and relational contexts generating ties*:
   - **Social role categories** (kin, friend, acquaintance)
   - **Sociodemographic similarity** (homophily)
-  - **Shared affiliations** (dorm, workplace)
+  - **Shared affiliations** (dorm, workplace, classroom)
 :::
 :::
 
 ::: {.callout-important}
-### Key Takeaway
+### Methodological Principle
 The relationship between indicators and predictors of tie strength is an **empirical question**, not a definitional certainty.
 :::
 
@@ -152,21 +227,27 @@ Building on Marsden and Campbell (1984), **Lizardo (2024)** develops a frame-ana
 
 ::: {.callout-tip}
 ### Analytical Goal
-Empirically examine how these distinct frames independently and interactively sort dyadic ties into specialized support regimes without definitional circularity.
+Empirically examine how these distinct frames independently sort dyadic ties into specialized support regimes without definitional circularity.
 :::
 
 ---
 
 ## Research Questions
 
-::: {.incremental}
-- **RQ1: Interdependence of Tie Strength Dimensions**
-  - How do affective closeness, contact frequency, cognitive salience, and duration relate to one another within personal communities?
-- **RQ2: Structural Role Differentiation**
-  - How do institutional role relations (family, friend, romantic partner, acquaintance) sort specific tie strength dimensions?
-- **RQ3: Independent Prediction of Support Configurations**
-  - Do tie strength indicators and role relations independently predict membership in distinct configurations of functional social support?
-  - Does support organize along a single hierarchy, or through a specialized functional division of labor?
+::: {.columns}
+::: {.column width="50%"}
+### RQ1: Interdependence of Dimensions
+- How do affective closeness, contact frequency, cognitive salience, and duration relate to one another within personal communities?
+
+### RQ2: Structural Role Differentiation
+- How do institutional role relations (family, friend, romantic partner, acquaintance) sort specific tie strength dimensions?
+:::
+
+::: {.column width="50%"}
+### RQ3: Prediction of Support Regimes
+- Do tie strength indicators and role relations independently predict membership in distinct configurations of functional social support?
+- Does support organize along a single hierarchy, or through a specialized functional division of labor?
+:::
 :::
 
 # Data, Design, and Measurement {data-background-color="#1e3d59"}
@@ -174,18 +255,18 @@ Empirically examine how these distinct frames independently and interactively so
 ## The NetHealth Study
 
 ::: {.columns}
-::: {.column width="60%"}
+::: {.column width="62%"}
 - **Longitudinal Panel Investigation**:
   - Tracked an undergraduate cohort at the **University of Notre Dame** (Class of 2019).
   - Matriculation in August 2015 through graduation in May 2019.
 - **Scope & Objectives**:
   - Investigated the reciprocal co-evolution of social networks, health behaviors (physical activity, sleep, stress), and academic trajectories.
 - **Ego-Network Survey Battery**:
-  - Administered online via Qualtrics at the beginning and end of semesters.
+  - Administered online via Qualtrics at the beginning and end of academic semesters.
 :::
 
-::: {.column width="40%"}
-![](Plots/notre_dame_campus.jpg){width="100%" fig-align="center" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.15);"}
+::: {.column width="38%"}
+![](Plots/notre_dame_campus.jpg){width="100%" fig-align="center" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); max-height: 420px; object-fit: cover;"}
 :::
 :::
 
@@ -275,43 +356,36 @@ Respondents indicated whether each named alter provided four distinct forms of a
 :::
 :::
 
-# Methodological Leap: Beyond 2018 Log-Linear Models {data-background-color="#1e3d59"}
+# Analytical Strategy: Two-Stage Modeling Framework {data-background-color="#1e3d59"}
 
-## The 2018 Baseline: Log-Linear Contingency Models
+## Methodological Challenges in Network Support Research
 
-In the original 2018 Manchester presentation, the analysis relied on:
+Evaluating social support in personal networks poses three key analytical challenges:
 
-1. **Manually Imposed A Priori Categories**:
-   - Support combinations were collapsed into 5 heuristic categories:
-     - *Full Support* (all 4 items endorsed)
-     - *Hang & Not Financial* (sociability without money)
-     - *Advice/Comfort Only* (expressive, no hangout, no financial)
-     - *Financial Included*
-     - *No Support*
-2. **Multi-Way Contingency Table Models**:
-   - Pooled all dyadic ties into cross-classified tables.
-   - Fitted log-linear models testing marginal associations.
+::: {.columns}
+::: {.column width="50%"}
+### 1. Complex Multidimensionality
+- Support exchanges are multiplex across distinct domains (social, emotional, informational, material).
+- Imposing manual heuristic groupings obscures the **natural, emergent configurations** of support that exist in personal communities.
 
----
+### 2. Dyadic Clustering
+- Ties are nested within respondents ($N = 22,737$ ties within $J = 581$ egos).
+- Violating independence deflates standard errors and conflates within-ego from between-ego variation.
+:::
 
-## Methodological Pathologies of the 2018 Approach
-
-Why did the original analytical framework prove inadequate?
-
-::: {.incremental}
-- **1. Arbitrary Heuristic Thresholds**:
-  - Imposing manual combinations obscures the **natural, emergent configurations** of support that exist in personal communities.
-- **2. Dyadic Clustering & SE Deflation**:
-  - Pooling ties ignores that multiple ties are nested within respondents ($N = 22,737$ ties within $J = 581$ egos), violating independence assumptions and deflating standard errors.
-- **3. Cell Sparsity & Separation Pathologies**:
-  - Rare dyadic combinations (e.g., only 1 acquaintance in instrumental kin support) generate quasi-complete separation, causing Newton-Raphson algorithms to produce unstable covariance matrices.
+::: {.column width="50%"}
+### 3. Sparse Cells & Quasi-Separation
+- Specialized support types cross-classified with specific roles produce extreme sparsity (e.g., only 1 acquaintance in instrumental kin support).
+- Under simultaneous multinomial estimators, sparse cells induce **quasi-complete separation**, leading to non-convergence and unstable covariance matrices.
+- **Solution**: Separate binary GLMMs allow robust convergence without collapsing granular categories.
+:::
 :::
 
 ---
 
-## The New Two-Stage Analytical Architecture
+## The Two-Stage Analytical Architecture
 
-To overcome these pathologies, we deploy a **unified two-stage empirical framework**:
+To address these challenges, we implement a **unified two-stage empirical framework**:
 
 ::: {.columns}
 ::: {.column width="50%"}
@@ -319,16 +393,16 @@ To overcome these pathologies, we deploy a **unified two-stage empirical framewo
 - **Latent Class Analysis (`poLCA`)**:
   - Unsupervised finite mixture model across the 4 binary Qualtrics support items.
   - Identifies discrete, latent support configurations directly from response patterns ($K = 2 \dots 5$).
-  - Eliminates arbitrary heuristic cutoffs.
+  - Evaluates goodness-of-fit via AIC, BIC, and classification entropy.
 :::
 
 ::: {.column width="50%"}
-### Stage 2: Multilevel GLMMs
-- **Hierarchical Mixed Models (`lme4`)**:
+### Stage 2: Confirmatory Multilevel GLMMs
+- **Hierarchical Logistic Mixed Models (`lme4`)**:
   - Predicts membership in each latent configuration directly:
     $$\text{logit}(P(Y_{ij}=k)) = \beta_{0k} + \mathbf{X}_{ij}\boldsymbol{\beta}_k + u_{jk}$$
-  - Ego random intercepts ($u_{jk} \sim \mathcal{N}(0, \sigma_{uk}^2)$) partition within-ego from between-ego variance.
-  - Evaluates all 18 predictors simultaneously.
+  - Ego random intercepts ($u_{jk} \sim \mathcal{N}(0, \sigma_{uk}^2)$) account for respondent-level clustering.
+  - Simultaneously estimates all 18 predictors.
 :::
 :::
 
@@ -338,7 +412,7 @@ To overcome these pathologies, we deploy a **unified two-stage empirical framewo
 
 Model fit statistics across $K = 2 \dots 5$ latent classes ($N = 22,739$ ties):
 
-| Model | Log-Likelihood | Par | AIC | BIC | Entropy |
+| Latent Classes | Log-Likelihood | Par | AIC | BIC | Entropy |
 |:---|:---:|:---:|:---:|:---:|:---:|
 | 2 Classes | -42,348.5 | 9 | 84,714.9 | 84,787.2 | 0.760 |
 | 3 Classes | -41,670.9 | 14 | 83,369.8 | 83,482.2 | 0.858 |
@@ -347,14 +421,16 @@ Model fit statistics across $K = 2 \dots 5$ latent classes ($N = 22,739$ ties):
 
 ::: {.callout-note}
 ### Optimal Solution: 4 Classes
-The **4-Class solution** minimizes both AIC (83,291.2) and BIC (83,443.8) while maintaining solid classification entropy (0.766). Adding a 5th class yields no improvement in log-likelihood ($\Delta\text{LL} = 0$) and penalizes parsimony.
+The **4-Class solution** minimizes both AIC (83,291.2) and BIC (83,443.8) while maintaining solid classification entropy (0.766). Adding a 5th class yields no improvement in log-likelihood ($\Delta\text{LL} = 0$) and penalizes model parsimony.
 :::
 
 ---
 
 ## Latent Class Support Profiles (Figure 1)
 
-![](Plots/fig1_lca_support_profiles.png){fig-align="center" width="85%"}
+::: {.fig-container}
+![](Plots/fig1_lca_support_profiles.png)
+:::
 
 ---
 
@@ -436,14 +512,16 @@ $$\text{Latent ICC} = \frac{\sigma_u^2}{\sigma_u^2 + \pi^2/3}$$
 
 ::: {.callout-note}
 ### Substantive Meaning
-Between 25% and 38% of variance in tie support assignment reflects **ego-level sociability and reporting dispositions**—confirming why 2018 pooled log-linear models suffered from standard error deflation.
+Between 25% and 38% of variance in tie support assignment reflects **ego-level sociability and reporting thresholds**—confirming that accounting for dyadic clustering with random ego intercepts is indispensable.
 :::
 
 ---
 
 ## Comprehensive Multilevel Forest Plot (Figure 2)
 
-![](Plots/fig2_glmm_odds_ratios.png){fig-align="center" width="85%"}
+::: {.fig-container}
+![](Plots/fig2_glmm_odds_ratios.png)
+:::
 
 ---
 
@@ -470,7 +548,7 @@ Who provides multi-domain, holistic support?
 ::: {.column width="40%"}
 ::: {.callout-tip}
 ### Substantive Engine
-Comprehensive support requires a confluence of **affective intimacy, relational history, and psychological salience**. Men maintain substantially fewer comprehensive ties.
+Comprehensive support requires a confluence of **affective intimacy, relational history, and cognitive salience**. Men maintain substantially fewer comprehensive ties.
 :::
 :::
 :::
@@ -489,7 +567,7 @@ What governs everyday sociability without confiding?
   - Acquaintances: $\text{OR} = 0.21$ ($p < 0.001$).
 - **The Closeness Inversion**:
   - Especially Close: $\mathbf{\text{OR} = 0.24}$ ($p < 0.001$).
-  - *Why? Deep intimacy elevates ties out of casual companionship and into comprehensive backing.*
+  - *Deep intimacy elevates ties out of casual companionship and into comprehensive backing.*
 - **Cognitive Salience**:
   - Top 5 alters: $\text{OR} = 0.69$ ($p < 0.001$).
   - *Confirms that cognitive retrieval prioritizes confidants over recreational peers.*
@@ -527,7 +605,7 @@ What governs material aid and practical advice?
 ::: {.column width="40%"}
 ::: {.callout-important}
 ### Kinship Obligations
-Material backing is regulated by **institutional kinship norms**, remaining active despite low everyday interaction.
+Material backing is regulated by **institutional kinship roles**, remaining active despite low everyday interaction.
 :::
 :::
 :::
@@ -589,16 +667,23 @@ Peripheral ties combine **weak sentiments with non-intimate roles**, forming low
 
 ## Discussion: Summary of Key Findings
 
-::: {.incremental}
-1. **Cartography of Personal Networks**:
-   - Rather than an undifferentiated single continuum from “weak” to “strong,” personal communities organize into **four functionally specialized relational regimes**.
-2. **Empirical Decoupling of Relational Frames**:
-   - Vindicates **Marsden and Campbell (1984)** and **Lizardo (2024)**:
-     - Sentiments, interaction rates, cognitive salience, duration, and roles are distinct, non-redundant relational attributes.
-3. **Institutional and Normative Boundaries**:
-   - Kinship roles govern material survival and financial aid.
-   - Friendship governs everyday sociability and peer companionship.
-   - Affective intimacy is an indispensable prerequisite for expressive confiding.
+::: {.columns}
+::: {.column width="50%"}
+### 1. Relational Cartography
+- Rather than an undifferentiated continuum from “weak” to “strong,” personal communities organize into **four functionally specialized support configurations**.
+
+### 2. Decoupling Relational Frames
+- Validates **Marsden and Campbell (1984)** and **Lizardo (2024)**:
+  - Sentiments, interaction rates, cognitive salience, duration, and roles operate as distinct, non-redundant relational attributes.
+:::
+
+::: {.column width="50%"}
+### 3. Institutional Boundaries
+- Kinship roles govern material survival and financial aid.
+- Friendship governs everyday sociability and peer companionship.
+- Affective intimacy is an indispensable prerequisite for expressive confiding.
+- Cognitive prominence and relational history preserve access across physical distance.
+:::
 :::
 
 ---
@@ -609,7 +694,7 @@ Peripheral ties combine **weak sentiments with non-intimate roles**, forming low
 ::: {.column width="50%"}
 ### 1. Measurement & Intensity
 - **Binary Incidence**:
-  - Qualtrics items record occurrence (Yes/No), not transaction volume, dollar amounts, or affective depth.
+  - Survey items record occurrence (Yes/No), not transaction volume, dollar amounts, or affective depth.
 - **Future Agenda**:
   - Multi-item scales of emotional intensity.
   - Experience Sampling Methods (ESM) / Ecological Momentary Assessments (EMA) tracking real-time activation.
@@ -634,7 +719,7 @@ Peripheral ties combine **weak sentiments with non-intimate roles**, forming low
 ::: {.column width="55%"}
 - **Revisiting Classical Social Capital**:
   - Classical models (Granovetter 1973; Coleman 1988; Lin 2001) often assumed strong ties uniformly provide all assistance.
-- **"Strong Ties" Are Not All Created the Same**:
+- **"Strong Ties" Are Not All Created Equal**:
   - High contact frequency does not guarantee confiding.
   - Emotional closeness does not ensure financial assistance.
   - Kinship functions as an enduring anchor net of daily activation.
@@ -680,24 +765,28 @@ Decoupling relational frames provides the structural foundation needed to model 
 
 ::: {.columns}
 ::: {.column width="50%"}
-### What the 2018 Talk Had
-- Heuristic 5-category support binning.
-- Multi-way log-linear models on pooled contingency tables.
-- Ignored respondent clustering and suffered from cell sparsity.
-- Conceptualized tie strength as a broad composite.
+### Conceptual Contributions
+- **Decoupled Relational Frames**:
+  - Differentiates sentiment, interaction, history, salience, roles, and functional support.
+- **Specialized Division of Labor**:
+  - Replaces the unidimensional weak/strong continuum with discrete, specialized relational regimes.
+- **Relational Portfolios**:
+  - Re-theorizes social capital as maintaining a diversified matrix of ties across distinct life domains.
 :::
 
 ::: {.column width="50%"}
-### What the 2026 Paper Establishes
-- **Inductive LCA** uncovering 4 natural support regimes without arbitrary heuristics.
-- **Multilevel GLMMs** with random ego intercepts, accounting for clustering ($\text{ICC} = 0.25–0.38$).
-- Complete simultaneous estimation across **18 predictors**.
-- **Frame-analytic decoupling** of sentiment, frequency, salience, duration, and roles.
+### Methodological & Empirical Advances
+- **Unified Two-Stage Framework**:
+  - Combines inductive LCA with confirmatory multilevel GLMMs.
+- **Ego-Clustering Accounting**:
+  - Explicitly partitions variance via random ego intercepts ($\text{ICC} = 0.25–0.38$).
+- **Comprehensive 18-Predictor Mapping**:
+  - Simultaneously estimates tie strength, role relations, and contexts without category collapsing.
 :::
 :::
 
 ::: {.fragment}
-<div style="text-align: center; margin-top: 1.5em;">
+<div style="text-align: center; margin-top: 1.2em;">
 ### Thank You! Questions & Discussion
 **David Hachen** (`dhachen@nd.edu`) & **Omar Lizardo** (`olizardo@soc.ucla.edu`)
 </div>
