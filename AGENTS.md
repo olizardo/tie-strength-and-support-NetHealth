@@ -874,7 +874,7 @@ To eliminate the disconnect between inductive typologizing and confirmatory regr
 - **Table 2 (`tab:lca_crosstabs`)**: Distribution of Latent Support Classes across Social Roles and Emotional Closeness (single-term column labels without slashes).
 - **Pruning of Table 3**: The large regression table was pruned in favor of the visual forest plot (Figure 2), eliminating redundant presentation and avoiding illegibly small fonts.
 - **Figure 1 (`fig:lca_profiles`)**: Conditional Item Response Probabilities grouped by latent class and colored by support item (`scale_fill_brewer(palette = "Set2")`).
-- **Figure 2 (`fig:glmm_odds`)**: Forest plot of adjusted odds ratios from multilevel logistic GLMMs with bounded x-axis ($[0.1, 20]$), resolving the collapsed marker issue resulting from sparse-cell separation.
+- **Figure 2 (`fig:glmm_odds`)**: Forest plot of adjusted odds ratios from multilevel logistic GLMMs with bounded x-axis ($[0.1, 20]$). Includes all 18 non-intercept predictors across tie strength (closeness, frequency, salience, duration), role relations, and contexts, with a centered two-row legend (`guides(color = guide_legend(nrow = 2, byrow = TRUE, ...))`) preventing margin overflow, and Footnote 1 documenting the omission of the single degenerate cell ($n = 1$ acquaintance in instrumental support, $\text{OR} = 2.91 \times 10^{-6}, \text{SE} = 271.99$).
 
 ### 5. Current Directory Structure & Asset Taxonomy
 ```
@@ -882,8 +882,8 @@ tie-strength-and-support-NetHealth/
 ├── AGENTS.md                         # Global & project-specific guidelines
 ├── README.md                         # Project overview and replication commands
 ├── manuscript.tex                    # Standalone LaTeX manuscript (canonical authoring source)
-├── references.bib                    # Complete BibTeX database (19 references including R packages)
-├── manuscript.pdf                    # Compiled 15-page publication PDF (0 errors, 0 warnings)
+├── references.bib                    # Complete BibTeX database (21 references including R packages, Coleman 1988, Small 2017)
+├── manuscript.pdf                    # Compiled 18-page publication PDF (0 errors, 0 warnings)
 ├── draft_manuscript.md               # Local Markdown manuscript mirror
 ├── Manchester Talk.pptx              # Original 2018 Manchester presentation slides
 ├── data/                             # Analytical datasets (.gitignore protected)
@@ -913,10 +913,20 @@ tie-strength-and-support-NetHealth/
    - Username must always be the literal string **`git`** (not email).
    - Configure credentials in `~/.netrc` (`chmod 600`) and set remote to `https://git.overleaf.com/<PROJECT_ID>`.
 3. **Handling Sparse Cells in Forest Plots (Preventing Collapsed Markers)**:
-   - In dyadic network regressions with rare categorical combinations (e.g. $n = 1$ acquaintance in instrumental support), logistic GLMMs produce extreme separation ($	ext{SE} > 200$, upper $	ext{CI} > 10^{200}$).
+   - In dyadic network regressions with rare categorical combinations (e.g. $n = 1$ acquaintance in instrumental support), logistic GLMMs produce extreme separation ($\text{SE} > 200$, upper $\text{CI} > 10^{200}$).
    - On a logarithmic ggplot axis (`scale_x_log10()`), unbounded upper CIs stretch the axis astronomically, squishing all realistic estimates ($0.1$ to $20$) into an invisible cluster near zero.
-   - Always filter or clamp degenerate points (`std_error > 10`) and explicitly bound the display limits (`scale_x_log10(limits = c(0.1, 20))`).
+   - Always filter or clamp degenerate points (`std_error > 10`), explicitly bound the display limits (`scale_x_log10(limits = c(0.1, 20))`), and add a clear footnote/note documenting the parameter and rationale.
 4. **Group by Latent Class, Color by Item in LCA Plots**:
    - In conditional item response plots for LCA, group bars by latent class on the axis and color by item. This allows readers to evaluate the multidimensional profile of each latent class at a single glance.
 5. **Eliminating Redundant Tables in Favor of Forest Plots**:
    - For multi-outcome regression comparisons, a clean, dodged forest plot (Figure 2) communicates effect magnitudes and confidence intervals far more effectively than dense multi-column tables. Prune redundant tables to prevent clutter and avoid unreadably small fonts.
+6. **Tripartite Discussion Section Structure (`cua-beauty-survey` Architecture)**:
+   - Structure manuscript discussion sections into three dedicated, substantive subsections:
+     1. `Summary of Key Results`: Overarching synthetic cartography, confirmation of decoupled relational frames, substantive breakdown of latent support regimes, multilevel predictive patterns, and gender/contextual dynamics.
+     2. `Limitations and Suggestions for Future Work`: Methodological measurement constraints (binary indicators $\rightarrow$ ESM/EMA, multi-item scales), threats to causal inference and dynamic selection (attachment styles, reciprocal feedback loops $\rightarrow$ cross-lagged panel models, dyadic fixed effects), and institutional scope/generalizability (collegiate life-course transition $\rightarrow$ nationally representative ego-network panels).
+     3. `Theoretical Implications: Decoupling Relational Frames in Social Capital`: Classical social capital debates (Granovetter, Lin, Coleman), frame-analytic resolution of the functional division of labor (Lizardo, Marsden & Campbell, Small), and diversified relational portfolios.
+7. **In-Flight Collaboration and Overleaf Rebase Discipline**:
+   - When collaborating on live Overleaf documents, always fetch remote commits (`git fetch overleaf`) before pushing.
+   - During rebase conflicts, never discard the author's live prose edits; surgically weave their revisions and lexical choices directly into newly structured sections.
+8. **Multi-Row Figure Legends on Standard Canvases**:
+   - For multi-category discrete guides on 6.5-inch portrait canvases, enforce `nrow = 2` (or `nrow = 3`) with `byrow = TRUE` and centered titles (`title.position = "top", title.hjust = 0.5`) to prevent horizontal margin clipping and keep facet/panel widths well-balanced.
